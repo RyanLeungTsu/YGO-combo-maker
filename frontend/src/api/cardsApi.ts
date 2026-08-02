@@ -38,3 +38,11 @@ export async function searchCards(
     hasMore: json.data.length === num, 
   };
 }
+
+// for fetching card archetypes
+export async function getArchetypes(): Promise<string[]> {
+  const res = await fetch("https://db.ygoprodeck.com/api/v7/archetypes.php");
+  if (!res.ok) throw new Error(`Archetype fetch failed: ${res.status}`);
+  const json: { archetype_name: string }[] = await res.json();
+  return json.map((a) => a.archetype_name).sort();
+}
