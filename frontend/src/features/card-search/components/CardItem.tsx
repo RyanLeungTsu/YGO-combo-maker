@@ -1,3 +1,4 @@
+import { useDraggable } from "@dnd-kit/core";
 import type { Card } from "../../../types/card";
 import { useDeckStore } from "../../deck-builder/hooks/useDeckStore";
 
@@ -8,26 +9,40 @@ interface CardItemProps {
 
 export function CardItem({ card, onClick }: CardItemProps) {
   const addCard = useDeckStore((state) => state.addCard);
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `search-${card.id}`,
+    data: { card },
+  });
 
   return (
-    <div style={{ cursor: "pointer", textAlign: "center", position: "relative" }}>
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={{
+        textAlign: "center",
+        opacity: isDragging ? 0.4 : 1,
+        cursor: "grab",
+      }}
+    >
       <img
         src={card.card_images[0]?.image_url_small}
         alt={card.name}
         loading="lazy"
+        title={`${card.name} — click to preview, double-click or right-click to add to deck`}
         onClick={() => onClick(card)}
-        style={{ width: "100%", borderRadius: 6 }}
-      />
-      <p style={{ fontSize: 12, margin: "4px 0" }}>{card.name}</p>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
+        onDoubleClick={() => addCard(card)}
+        onContextMenu={(e) => {
+          e.preventDefault();
           addCard(card);
         }}
-        style={{ fontSize: 11, padding: "2px 6px" }}
-      >
-        + Add to Deck
-      </button>
+        style={{
+          width: "100%",
+          borderRadius: 6,
+          pointerEvents: isDragging ? "none" : "auto",
+        }}
+      />
+      <p style={{ fontSize: 12, margin: "4px 0" }}>{card.name}</p>
     </div>
   );
 }

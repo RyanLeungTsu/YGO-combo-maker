@@ -2,10 +2,13 @@ import { useDeckStore } from "../hooks/useDeckStore";
 import { useDeckValidation } from "../hooks/useDeckValidation";
 import { DeckMakerArea } from "./deckMakerArea";
 import { RuleWarning } from "./ruleWarning";
+import { DeckStatsPanel } from "./deckStatsPanel";
+import { DeckImportExportModal } from "./deckImportExportModal";
 
 export function DeckBuilderPanel() {
   const { main, extra, side, removeCard, clearDeck } = useDeckStore();
-  const { violations } = useDeckValidation({ main, extra, side });
+  const deck = { main, extra, side };
+  const { violations } = useDeckValidation(deck);
 
   return (
     <div>
@@ -14,11 +17,14 @@ export function DeckBuilderPanel() {
         <button onClick={clearDeck}>Clear Deck</button>
       </div>
 
+      <DeckImportExportModal />
       <RuleWarning violations={violations} />
 
       <DeckMakerArea label="Main Deck" zone="main" cards={main} onRemove={removeCard} />
       <DeckMakerArea label="Extra Deck" zone="extra" cards={extra} onRemove={removeCard} />
       <DeckMakerArea label="Side Deck" zone="side" cards={side} onRemove={removeCard} />
+
+      <DeckStatsPanel deck={deck} />
     </div>
   );
 }

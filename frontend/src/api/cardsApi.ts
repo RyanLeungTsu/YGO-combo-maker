@@ -46,3 +46,13 @@ export async function getArchetypes(): Promise<string[]> {
   const json: { archetype_name: string }[] = await res.json();
   return json.map((a) => a.archetype_name).sort();
 }
+
+// lookup for .ydk
+export async function getCardsByIds(ids: number[]): Promise<Card[]> {
+  if (ids.length === 0) return [];
+  const params = new URLSearchParams({ id: ids.join(",") });
+  const res = await fetch(`${BASE_URL}?${params.toString()}`);
+  if (!res.ok) return [];
+  const json: CardSearchResponse = await res.json();
+  return json.data;
+}

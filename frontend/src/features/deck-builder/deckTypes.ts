@@ -12,5 +12,5 @@ export interface Violation {
   rule: string;
   message: string;
 //   shows non-legal decks as a warning allowing for more user freedom
-  severity: "warning"; 
+  severity: "warning" | "blocked"; 
 }
