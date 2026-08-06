@@ -1,12 +1,8 @@
 import { useDroppable } from "@dnd-kit/core";
-import {
-  SortableContext,
-  horizontalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import { useComboStore } from "../hooks/useComboStore";
 import { ComboStepCard } from "./comboStepCard";
 import { ComboConnector } from "./comboConnector";
-// import type { Card } from "../../../types/card";
+
 
 export function ComboArea() {
   const { steps } = useComboStore();
@@ -40,14 +36,12 @@ export function ComboArea() {
         </div>
       )}
 
-      <SortableContext items={steps.map((s) => s.id)} strategy={horizontalListSortingStrategy}>
-        {steps.map((step, i) => (
-          <div key={step.id} style={{ display: "flex", alignItems: "center" }}>
-            <ComboStepCard step={step} stepNumber={i + 1} />
-            {i < steps.length - 1 && <ComboConnector step={step} />}
-          </div>
-        ))}
-      </SortableContext>
+      {steps.map((step, i) => (
+        <div key={step.id} style={{ display: "flex", alignItems: "center" }}>
+          <ComboStepCard step={step} stepNumber={i + 1} />
+          {i < steps.length - 1 && <ComboConnector step={step} />}
+        </div>
+      ))}
     </div>
   );
 }

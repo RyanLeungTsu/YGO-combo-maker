@@ -33,9 +33,9 @@ function App() {
   const { filters, setFilter, clearFilter, clearAll } = useCardFilters({ name: "darklord" });
   const { addCard, moveCard, main, extra, side } = useDeckStore();
   const { previewCard, closePreview } = useUiStore();
-  const { steps, addStep, reorderSteps } = useComboStore();
+  const { addStep, reorderSteps } = useComboStore();
 
-    const sensors = useSensors(
+  const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   );
 
@@ -54,25 +54,19 @@ function App() {
     setActiveDragCard(null);
     const { active, over } = event;
     if (!over) return;
-
-    // Case 1: dropped a fresh card from search onto the combo area
+  // Case 1: user drops a fresh card from search onto the combo area
     if (over.id === "combo-canvas") {
       const card = active.data.current?.card as Card | undefined;
       if (card) addStep(card);
       return;
     }
-
-    // Case 2: reordering an existing combo step (both active and over are step ids)
-    const isReorder = steps.some((s) => s.id === active.id) && steps.some((s) => s.id === over.id);
-    if (isReorder) {
-      if (active.id !== over.id) {
-        const fromIndex = steps.findIndex((s) => s.id === active.id);
-        const toIndex = steps.findIndex((s) => s.id === over.id);
-        if (fromIndex !== -1 && toIndex !== -1) reorderSteps(fromIndex, toIndex);
-      }
+    // Case 2:user reorders an existing combo step (both active and over are step ids)
+    const draggedStepId = active.data.current?.stepId as string | undefined;
+    const targetStepId = over.data.current?.stepId as string | undefined;
+    if (draggedStepId && targetStepId) {
+      reorderSteps(draggedStepId, targetStepId);
       return;
     }
-
     // Case 3: search -> deck zone, or deck -> deck zone move
     const card = active.data.current?.card as Card | undefined;
     const fromZone = active.data.current?.fromZone as DeckMakerAreaName | undefined;

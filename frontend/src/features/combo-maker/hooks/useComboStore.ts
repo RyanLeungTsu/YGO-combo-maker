@@ -12,8 +12,7 @@ interface ComboStore {
     action: string,
     customText?: string,
   ) => void;
-  moveStep: (stepId: string, direction: "left" | "right") => void;
-  reorderSteps: (fromIndex: number, toIndex: number) => void;
+  reorderSteps: (stepIdA: string, stepIdB: string) => void;
   updateStepInstruction: (
     stepId: string,
     instruction: string,
@@ -57,30 +56,18 @@ export const useComboStore = create<ComboStore>()(
         }));
       },
 
-      moveStep: (stepId, direction) => {
+      reorderSteps: (stepIdA, stepIdB) => {
         set((state) => {
-          const index = state.steps.findIndex((s) => s.id === stepId);
-          if (index === -1) return state;
-
-          const targetIndex = direction === "left" ? index - 1 : index + 1;
-          if (targetIndex < 0 || targetIndex >= state.steps.length)
-            return state; // already at an edge
+          if (stepIdA === stepIdB) return state;
+          const indexA = state.steps.findIndex((s) => s.id === stepIdA);
+          const indexB = state.steps.findIndex((s) => s.id === stepIdB);
+          if (indexA === -1 || indexB === -1) return state;
 
           const updated = [...state.steps];
-          [updated[index], updated[targetIndex]] = [
-            updated[targetIndex],
-            updated[index],
-          ]; // swap
-          return { steps: updated };
-        });
-      },
-
-      reorderSteps: (fromIndex, toIndex) => {
-        set((state) => {
-          if (fromIndex === toIndex) return state;
-          const updated = [...state.steps];
-          const [moved] = updated.splice(fromIndex, 1);
-          updated.splice(toIndex, 0, moved);
+          [updated[indexA], updated[indexB]] = [
+            updated[indexB],
+            updated[indexA],
+          ];
           return { steps: updated };
         });
       },
