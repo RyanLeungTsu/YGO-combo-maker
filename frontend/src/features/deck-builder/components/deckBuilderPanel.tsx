@@ -2,7 +2,7 @@ import { useDeckStore } from "../hooks/useDeckStore";
 import { useDeckValidation } from "../hooks/useDeckValidation";
 import { DeckMakerArea } from "./deckMakerArea";
 import { RuleWarning } from "./ruleWarning";
-import { DeckStatsPanel } from "./deckStatsPanel";
+// import { DeckStatsPanel } from "./deckStatsPanel";
 import { DeckImportExportModal } from "./deckImportExportModal";
 
 export function DeckBuilderPanel() {
@@ -12,8 +12,7 @@ export function DeckBuilderPanel() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2>Deck Builder</h2>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
         <button onClick={clearDeck}>Clear Deck</button>
       </div>
 
@@ -23,8 +22,6 @@ export function DeckBuilderPanel() {
       <DeckMakerArea label="Main Deck" zone="main" cards={main} onRemove={removeCard} />
       <DeckMakerArea label="Extra Deck" zone="extra" cards={extra} onRemove={removeCard} />
       <DeckMakerArea label="Side Deck" zone="side" cards={side} onRemove={removeCard} />
-
-      <DeckStatsPanel deck={deck} />
     </div>
   );
 }

@@ -3,7 +3,6 @@ import { CardItem } from "./CardItem";
 
 interface CardGridProps {
   cards: Card[];
-  onCardClick: (card: Card) => void;
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
   onLoadMore: () => void;
@@ -11,7 +10,6 @@ interface CardGridProps {
 
 export function CardGrid({
   cards,
-  onCardClick,
   hasNextPage,
   isFetchingNextPage,
   onLoadMore,
@@ -26,7 +24,7 @@ export function CardGrid({
         }}
       >
         {cards.map((card) => (
-          <CardItem key={card.id} card={card} onClick={onCardClick} />
+          <CardItem key={card.id} card={card} />
         ))}
       </div>
 

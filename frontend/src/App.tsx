@@ -1,26 +1,49 @@
 import { useState } from "react";
-import { DndContext, DragOverlay, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
+import type { Card } from "./types/card";
+// UI imports
+import { useUiStore } from "./store/uiStore";
+import { Tab } from "./components/ui/Tab";
+// card search and filtering imports
 import { useCardSearch } from "./features/card-search/hooks/useCardSearch";
 import { useCardFilters } from "./features/card-search/hooks/useCardFilters";
 import { SearchBar } from "./features/card-search/components/Searchbar";
 import { FilterUI } from "./features/card-search/components/FilterUI";
 import { CardGrid } from "./features/card-search/components/CardGrid";
+// deck builder imports
 import { DeckBuilderPanel } from "./features/deck-builder/components/deckBuilderPanel";
 import { useDeckStore } from "./features/deck-builder/hooks/useDeckStore";
-import type { Card } from "./types/card";
 import type { DeckMakerAreaName } from "./features/deck-builder/deckTypes";
-import './App.css'
+import { DeckStatsPanel } from "./features/deck-builder/components/deckStatsPanel";
+// combo imports
+import { ComboArea } from "./features/combo-maker/components/comboArea";
+import "./App.css";
 
 function App() {
-  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [activeDragCard, setActiveDragCard] = useState<Card | null>(null);
-  const { filters, setFilter, clearFilter, clearAll } = useCardFilters({ name: "black luster" });
-  const { addCard, moveCard } = useDeckStore();
+  const { filters, setFilter, clearFilter, clearAll } = useCardFilters({ name: "darklord" });
+  const { addCard, moveCard, main, extra, side } = useDeckStore();
+  const { previewCard, closePreview } = useUiStore();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    })
+  );
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } =
     useCardSearch(filters);
 
   const allCards = data?.pages.flatMap((page) => page.cards) ?? [];
+  const deck = { main, extra, side };
 
   function handleDragStart(event: DragStartEvent) {
     const card = event.active.data.current?.card as Card | undefined;
@@ -31,6 +54,7 @@ function App() {
     setActiveDragCard(null);
     const { active, over } = event;
     if (!over) return;
+    if (over.id === "combo-canvas") return;
 
     const card = active.data.current?.card as Card | undefined;
     const fromZone = active.data.current?.fromZone as DeckMakerAreaName | undefined;
@@ -38,14 +62,14 @@ function App() {
     if (!card || !toZone) return;
 
     if (fromZone) {
-      moveCard(card, fromZone, toZone); 
+      moveCard(card, fromZone, toZone);
     } else {
-      addCard(card, toZone); 
+      addCard(card, toZone);
     }
   }
 
   return (
-    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div style={{ display: "flex", gap: 24, padding: 16 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <h1>Card Search</h1>
@@ -55,7 +79,6 @@ function App() {
           {error && <p>Error loading cards.</p>}
           <CardGrid
             cards={allCards}
-            onCardClick={setSelectedCard}
             hasNextPage={!!hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
             onLoadMore={() => fetchNextPage()}
@@ -63,15 +86,23 @@ function App() {
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <DeckBuilderPanel />
+          <Tab title="Deck Maker" defaultOpen={false}>
+            <DeckBuilderPanel />
+          </Tab>
+          <Tab title="Combo Maker" defaultOpen={true}>
+            <ComboArea />
+          </Tab>
+          <Tab title="Deck Stats" defaultOpen={false}>
+            <DeckStatsPanel deck={deck} />
+          </Tab>
         </div>
 
-        {selectedCard && (
+        {previewCard && (
           <div
-            onClick={() => setSelectedCard(null)}
-            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={closePreview}
+            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}
           >
-            <img src={selectedCard.card_images[0]?.image_url} alt={selectedCard.name} style={{ maxHeight: "80vh" }} />
+            <img src={previewCard.card_images[0]?.image_url} alt={previewCard.name} style={{ maxHeight: "80vh" }} />
           </div>
         )}
       </div>
