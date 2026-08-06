@@ -1,32 +1,27 @@
-import { useDroppable, useDndMonitor, type DragEndEvent } from "@dnd-kit/core";
+import { useDroppable } from "@dnd-kit/core";
+import {
+  SortableContext,
+  horizontalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { useComboStore } from "../hooks/useComboStore";
 import { ComboStepCard } from "./comboStepCard";
 import { ComboConnector } from "./comboConnector";
-import type { Card } from "../../../types/card";
+// import type { Card } from "../../../types/card";
 
 export function ComboArea() {
-  const { steps, addStep } = useComboStore();
+  const { steps } = useComboStore();
   const { setNodeRef, isOver } = useDroppable({ id: "combo-canvas" });
-
-  useDndMonitor({
-    onDragEnd(event: DragEndEvent) {
-      if (event.over?.id !== "combo-canvas") return;
-      const card = event.active.data.current?.card as Card | undefined;
-      if (!card) return;
-      addStep(card);
-    },
-  });
 
   return (
     <div
       ref={setNodeRef}
       style={{
         display: "flex",
+        flexWrap: "wrap",
         alignItems: "flex-start",
-        gap: 4,
+        gap: "12px 4px",
         padding: 16,
         minHeight: 220,
-        overflowX: "auto",
         border: isOver ? "2px dashed #50a0ff" : "2px dashed #333",
         borderRadius: 8,
         background: isOver ? "rgba(80,160,255,0.08)" : "transparent",
@@ -45,12 +40,14 @@ export function ComboArea() {
         </div>
       )}
 
-      {steps.map((step, i) => (
-        <div key={step.id} style={{ display: "flex", alignItems: "center" }}>
-          <ComboStepCard step={step} stepNumber={i + 1} />
-          {i < steps.length - 1 && <ComboConnector step={step} />}
-        </div>
-      ))}
+      <SortableContext items={steps.map((s) => s.id)} strategy={horizontalListSortingStrategy}>
+        {steps.map((step, i) => (
+          <div key={step.id} style={{ display: "flex", alignItems: "center" }}>
+            <ComboStepCard step={step} stepNumber={i + 1} />
+            {i < steps.length - 1 && <ComboConnector step={step} />}
+          </div>
+        ))}
+      </SortableContext>
     </div>
   );
 }

@@ -34,4 +34,5 @@ export interface ComboStep {
   customActionText?: string;
   instructionToNext?: InstructionPreset;
   customInstructionText?: string;
+  notes?: string;
 }

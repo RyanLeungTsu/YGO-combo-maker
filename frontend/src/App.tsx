@@ -25,6 +25,7 @@ import type { DeckMakerAreaName } from "./features/deck-builder/deckTypes";
 import { DeckStatsPanel } from "./features/deck-builder/components/deckStatsPanel";
 // combo imports
 import { ComboArea } from "./features/combo-maker/components/comboArea";
+import { useComboStore } from "./features/combo-maker/hooks/useComboStore";
 import "./App.css";
 
 function App() {
@@ -32,11 +33,10 @@ function App() {
   const { filters, setFilter, clearFilter, clearAll } = useCardFilters({ name: "darklord" });
   const { addCard, moveCard, main, extra, side } = useDeckStore();
   const { previewCard, closePreview } = useUiStore();
+  const { steps, addStep, reorderSteps } = useComboStore();
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
-    })
+    const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   );
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } =
@@ -54,8 +54,26 @@ function App() {
     setActiveDragCard(null);
     const { active, over } = event;
     if (!over) return;
-    if (over.id === "combo-canvas") return;
 
+    // Case 1: dropped a fresh card from search onto the combo area
+    if (over.id === "combo-canvas") {
+      const card = active.data.current?.card as Card | undefined;
+      if (card) addStep(card);
+      return;
+    }
+
+    // Case 2: reordering an existing combo step (both active and over are step ids)
+    const isReorder = steps.some((s) => s.id === active.id) && steps.some((s) => s.id === over.id);
+    if (isReorder) {
+      if (active.id !== over.id) {
+        const fromIndex = steps.findIndex((s) => s.id === active.id);
+        const toIndex = steps.findIndex((s) => s.id === over.id);
+        if (fromIndex !== -1 && toIndex !== -1) reorderSteps(fromIndex, toIndex);
+      }
+      return;
+    }
+
+    // Case 3: search -> deck zone, or deck -> deck zone move
     const card = active.data.current?.card as Card | undefined;
     const fromZone = active.data.current?.fromZone as DeckMakerAreaName | undefined;
     const toZone = over.data.current?.zone as DeckMakerAreaName | undefined;

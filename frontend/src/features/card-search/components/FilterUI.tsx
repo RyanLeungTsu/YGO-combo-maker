@@ -1,33 +1,51 @@
 import type { CardSearchFilters } from "../../../types/card";
-import { CARD_TYPES, CARD_ATTRIBUTES, CARD_LEVELS } from "../../../lib/constants";
+import {
+  CARD_TYPES,
+  CARD_ATTRIBUTES,
+  CARD_LEVELS,
+} from "../../../lib/constants";
 import { useArchetypes } from "../hooks/useArchetypes";
 
 interface FilterUIProps {
   filters: CardSearchFilters;
-  onSetFilter: <K extends keyof CardSearchFilters>(key: K, value: CardSearchFilters[K]) => void;
+  onSetFilter: <K extends keyof CardSearchFilters>(
+    key: K,
+    value: CardSearchFilters[K],
+  ) => void;
   onClearFilter: (key: keyof CardSearchFilters) => void;
   onClearAll: () => void;
 }
 
-export function FilterUI({ filters, onSetFilter, onClearFilter, onClearAll }: FilterUIProps) {
+export function FilterUI({
+  filters,
+  onSetFilter,
+  onClearFilter,
+  onClearAll,
+}: FilterUIProps) {
   const { data: archetypes, isLoading: archetypesLoading } = useArchetypes();
 
   const activeFilterCount = Object.keys(filters).filter(
-    (k) => k !== "name" && filters[k as keyof CardSearchFilters] !== undefined
+    (k) => k !== "name" && filters[k as keyof CardSearchFilters] !== undefined,
   ).length;
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "12px 0" }}>
+    <div
+      style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "12px 0" }}
+    >
       {/* type */}
       <select
         value={filters.type ?? ""}
         onChange={(e) =>
-          e.target.value ? onSetFilter("type", e.target.value) : onClearFilter("type")
+          e.target.value
+            ? onSetFilter("type", e.target.value)
+            : onClearFilter("type")
         }
       >
         <option value="">Type: Any</option>
         {CARD_TYPES.map((t) => (
-          <option key={t} value={t}>{t}</option>
+          <option key={t} value={t}>
+            {t}
+          </option>
         ))}
       </select>
 
@@ -35,12 +53,16 @@ export function FilterUI({ filters, onSetFilter, onClearFilter, onClearAll }: Fi
       <select
         value={filters.attribute ?? ""}
         onChange={(e) =>
-          e.target.value ? onSetFilter("attribute", e.target.value) : onClearFilter("attribute")
+          e.target.value
+            ? onSetFilter("attribute", e.target.value)
+            : onClearFilter("attribute")
         }
       >
         <option value="">Attribute: Any</option>
         {CARD_ATTRIBUTES.map((a) => (
-          <option key={a} value={a}>{a}</option>
+          <option key={a} value={a}>
+            {a}
+          </option>
         ))}
       </select>
 
@@ -48,12 +70,16 @@ export function FilterUI({ filters, onSetFilter, onClearFilter, onClearAll }: Fi
       <select
         value={filters.level ?? ""}
         onChange={(e) =>
-          e.target.value ? onSetFilter("level", Number(e.target.value)) : onClearFilter("level")
+          e.target.value
+            ? onSetFilter("level", Number(e.target.value))
+            : onClearFilter("level")
         }
       >
         <option value="">Level: Any</option>
         {CARD_LEVELS.map((lvl) => (
-          <option key={lvl} value={lvl}>{lvl}</option>
+          <option key={lvl} value={lvl}>
+            {lvl}
+          </option>
         ))}
       </select>
 
@@ -63,7 +89,9 @@ export function FilterUI({ filters, onSetFilter, onClearFilter, onClearAll }: Fi
         placeholder="Min ATK"
         value={filters.atk ?? ""}
         onChange={(e) =>
-          e.target.value ? onSetFilter("atk", Number(e.target.value)) : onClearFilter("atk")
+          e.target.value
+            ? onSetFilter("atk", Number(e.target.value))
+            : onClearFilter("atk")
         }
         style={{ width: 90 }}
       />
@@ -74,7 +102,9 @@ export function FilterUI({ filters, onSetFilter, onClearFilter, onClearAll }: Fi
         placeholder="Min DEF"
         value={filters.def ?? ""}
         onChange={(e) =>
-          e.target.value ? onSetFilter("def", Number(e.target.value)) : onClearFilter("def")
+          e.target.value
+            ? onSetFilter("def", Number(e.target.value))
+            : onClearFilter("def")
         }
         style={{ width: 90 }}
       />
@@ -83,18 +113,24 @@ export function FilterUI({ filters, onSetFilter, onClearFilter, onClearAll }: Fi
       <select
         value={filters.archetype ?? ""}
         onChange={(e) =>
-          e.target.value ? onSetFilter("archetype", e.target.value) : onClearFilter("archetype")
+          e.target.value
+            ? onSetFilter("archetype", e.target.value)
+            : onClearFilter("archetype")
         }
         disabled={archetypesLoading}
       >
         <option value="">Archetype: Any</option>
         {archetypes?.map((a) => (
-          <option key={a} value={a}>{a}</option>
+          <option key={a} value={a}>
+            {a}
+          </option>
         ))}
       </select>
 
       {activeFilterCount > 0 && (
-        <button onClick={onClearAll}>Clear filters ({activeFilterCount})</button>
+        <button onClick={onClearAll}>
+          Clear filters ({activeFilterCount})
+        </button>
       )}
     </div>
   );

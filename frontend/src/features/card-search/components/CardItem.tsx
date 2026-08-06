@@ -12,7 +12,16 @@ export function CardItem({ card }: { card: Card }) {
   });
 
   return (
-    <div ref={setNodeRef} {...listeners} {...attributes} style={{ textAlign: "center", opacity: isDragging ? 0.4 : 1, cursor: "grab" }}>
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={{
+        textAlign: "center",
+        opacity: isDragging ? 0.4 : 1,
+        cursor: "grab",
+      }}
+    >
       <img
         src={card.card_images[0]?.image_url_small}
         alt={card.name}
@@ -24,7 +33,11 @@ export function CardItem({ card }: { card: Card }) {
           e.preventDefault();
           addCard(card);
         }}
-        style={{ width: "100%", borderRadius: 6, pointerEvents: isDragging ? "none" : "auto" }}
+        style={{
+          width: "100%",
+          borderRadius: 6,
+          pointerEvents: isDragging ? "none" : "auto",
+        }}
       />
       <p style={{ fontSize: 12, margin: "4px 0" }}>{card.name}</p>
     </div>
