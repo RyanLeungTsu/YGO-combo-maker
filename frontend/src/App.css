@@ -182,3 +182,19 @@
     border-right-color: var(--border);
   }
 }
+
+.app-layout {
+  display: flex;
+  gap: 24px;
+  padding: 16px;
+}
+
+.search-panel {
+  flex: 1 1 25%;
+  min-width: 280px;
+}
+
+.side-panel {
+  flex: 1 1 75%;
+  min-width: 0;
+}

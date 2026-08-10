@@ -1,0 +1,101 @@
+.combo-row {
+  position: relative; 
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 16px;
+  padding: 16px;
+  min-height: 220px;
+  border: 2px dashed #333;
+  border-radius: 8px;
+  background: transparent;
+}
+
+.combo-row--active {
+  border-color: #50a0ff;
+  background: rgba(80, 160, 255, 0.08);
+}
+
+.combo-empty-slot {
+  width: 140px;
+  height: 190px;
+  border: 2px dashed #555;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.connector-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; 
+}
+
+.connector-bar {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: 2px solid #c0392b;
+  border-radius: 4px;
+  background: #1e1e1e;
+  color: #eee;
+  font-size: 10px;
+  padding: 2px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: all; 
+  z-index: 2;
+}
+
+.connector-bar select,
+.connector-bar input {
+  font-size: 10px;
+  max-width: 90px;
+  border: none;
+  background: transparent;
+  color: inherit;
+}
+
+.connector-leg {
+  position: absolute;
+  width: 1px;
+  background: #c0392b;
+}
+
+.combo-step-card {
+  --step-card-width: 140px;
+  position: relative;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 8px;
+  padding-top: 20px;
+  width: var(--step-card-width);
+  flex-shrink: 0;
+}
+
+/* mobile */
+@media (max-width: 40rem) {
+  .combo-step-card {
+    --step-card-width: clamp(6rem, 32vw, 7.5rem);
+  }
+}
+
+/* tablet */
+@media (min-width: 40.1rem) and (max-width: 64rem) {
+  .combo-step-card {
+    --step-card-width: clamp(7rem, 16vw, 9rem);
+  }
+}
+
+/* desktop */
+@media (min-width: 64.1rem) {
+  .combo-step-card {
+    --step-card-width: clamp(8rem, 9vw, 11rem);
+  }
+}
