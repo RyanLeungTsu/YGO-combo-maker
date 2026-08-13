@@ -82,8 +82,8 @@ function App() {
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div style={{ display: "flex", gap: 24, padding: 16 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
+      <div className="app-layout">
+        <div className="search-panel">
           <h1>Card Search</h1>
           <SearchBar value={filters.name ?? ""} onChange={(v) => setFilter("name", v || undefined)} />
           <FilterUI filters={filters} onSetFilter={setFilter} onClearFilter={clearFilter} onClearAll={clearAll} />
@@ -97,7 +97,7 @@ function App() {
           />
         </div>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="combo-deck-panel">
           <Tab title="Deck Maker" defaultOpen={false}>
             <DeckBuilderPanel />
           </Tab>

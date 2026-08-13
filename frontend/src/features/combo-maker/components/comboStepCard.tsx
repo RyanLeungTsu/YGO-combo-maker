@@ -88,7 +88,7 @@ export const ComboStepCard = forwardRef<HTMLDivElement, ComboStepCardProps>(func
       )}
 
       <textarea
-        placeholder="Notes..."
+        placeholder="Notes"
         value={notes}
         onChange={(e) => {
           setNotes(e.target.value);

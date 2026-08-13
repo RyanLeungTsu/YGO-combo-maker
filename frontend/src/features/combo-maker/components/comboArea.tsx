@@ -3,13 +3,13 @@ import { useDroppable } from "@dnd-kit/core";
 import { useComboStore } from "../hooks/useComboStore";
 import { ComboStepCard } from "./comboStepCard";
 import { ComboConnector } from "./comboConnector";
-import "../../../styles/comboArea.css"
+import "../../../styles/comboArea.css";
 
 // for the connectors in flexbox
 interface ConnectorPosition {
   stepId: string;
-  x: number;   
-  y: number;   
+  x: number;
+  y: number;
   leftLegX: number;
   rightLegX: number;
 }
@@ -53,11 +53,11 @@ export function ComboArea() {
     }
     setConnectors(next);
   };
-
+  // for remeasure when combo has cards/steps in it
   useLayoutEffect(() => {
     measure();
   }, [steps]);
-
+  // for remeasuring container size change
   useEffect(() => {
     const row = rowRef.current;
     if (!row) return;
@@ -74,19 +74,32 @@ export function ComboArea() {
       }}
       className={`combo-row ${isOver ? "combo-row--active" : ""}`}
     >
+      {/* state for no steps */}
       {steps.length === 0 && <div className="combo-empty-slot">+</div>}
-
+      {/* for flex, wrap/size determined by cards */}
       {steps.map((step, i) => (
-        <ComboStepCard key={step.id} ref={setCardRef(step.id)} step={step} stepNumber={i + 1} />
+        <ComboStepCard
+          key={step.id}
+          ref={setCardRef(step.id)}
+          step={step}
+          stepNumber={i + 1}
+        />
       ))}
 
       <div className="connector-overlay">
         {connectors.map((c) => {
-          const step = steps.find((s) => s.id === c.stepId)!;
+          const step = steps.find((s) => s.id === c.stepId);
+          if (!step) return null;
           return (
             <div key={c.stepId}>
-              <div className="connector-leg" style={{ left: c.leftLegX, top: c.y, height: 10 }} />
-              <div className="connector-leg" style={{ left: c.rightLegX, top: c.y, height: 10 }} />
+              <div
+                className="connector-leg"
+                style={{ left: c.leftLegX, top: c.y, height: 10 }}
+              />
+              <div
+                className="connector-leg"
+                style={{ left: c.rightLegX, top: c.y, height: 10 }}
+              />
               <ComboConnector step={step} x={c.x} y={c.y} />
             </div>
           );

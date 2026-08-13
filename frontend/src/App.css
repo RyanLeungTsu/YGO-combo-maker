@@ -185,16 +185,16 @@
 
 .app-layout {
   display: flex;
-  gap: 24px;
-  padding: 16px;
+  gap: 2rem;
+  padding: 1rem;
 }
 
 .search-panel {
-  flex: 1 1 25%;
-  min-width: 280px;
+  flex: 1 1 30%;
+  min-width: 18rem;
 }
 
-.side-panel {
-  flex: 1 1 75%;
+.combo-deck-panel {
+  flex: 1 1 70%;
   min-width: 0;
 }
