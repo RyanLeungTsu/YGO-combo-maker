@@ -1,4 +1,5 @@
 import type { Card } from "../../types/card";
+import type { StepFieldChanges } from "./fieldTypes";
 
 export const ACTION_PRESETS = [
   "Normal Summon",
@@ -18,6 +19,10 @@ export type ActionPreset = (typeof ACTION_PRESETS)[number];
 export const INSTRUCTION_PRESETS = [
   "Activate Effect",
   "Tribute for Summon",
+  "Normal Summon",
+  "Special Summon",
+  "Set",
+  "Target",
   "Send to GY (Cost)",
   "Discard (Cost)",
   "Chain Link",
@@ -35,4 +40,15 @@ export interface ComboStep {
   instructionToNext?: InstructionPreset;
   customInstructionText?: string;
   notes?: string;
+}
+
+export interface ComboStep {
+  id: string;
+  card: Card;
+  action: ActionPreset;
+  customActionText?: string;
+  instructionToNext?: InstructionPreset;
+  customInstructionText?: string;
+  notes?: string;
+  fieldChanges?: StepFieldChanges;
 }

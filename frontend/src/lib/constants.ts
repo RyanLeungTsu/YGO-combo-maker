@@ -22,7 +22,7 @@ export const CARD_ATTRIBUTES = [
 ] as const;
 
 // for levels on yu-gi-oh cards
-export const CARD_LEVELS = Array.from({ length: 13 }, (_, i) => i + 1); 
+export const CARD_LEVELS = Array.from({ length: 13 }, (_, i) => i + 1);
 
 // min deck reqs
 export const DECK_LIMITS = {
@@ -41,3 +41,38 @@ export const EXTRA_DECK_TYPES = [
   "Xyz Monster",
   "Link Monster",
 ] as const;
+// =====================
+// deck sorting
+// =====================
+
+// for sorting order
+export const CARD_CATEGORY_ORDER: Record<string, number> = {
+  monster: 0,
+  spell: 1,
+  trap: 2,
+};
+
+// spell sort order
+export const SPELL_SUBTYPE_ORDER: Record<string, number> = {
+  "Normal Spell Card": 0,
+  "Spell Card": 0,
+  "Equip Spell Card": 1,
+  "Ritual Spell Card": 2,
+  "Quick-Play Spell Card": 3,
+  "Continuous Spell Card": 4,
+  "Field Spell Card": 5,
+};
+
+// trap sort order
+export const TRAP_SUBTYPE_ORDER: Record<string, number> = {
+  "Normal Trap Card": 0,
+  "Trap Card": 0,
+  "Continuous Trap Card": 1,
+  "Counter Trap Card": 2,
+};
+
+export function getCardType(type: string): "monster" | "spell" | "trap" {
+  if (type.includes("Spell")) return "spell";
+  if (type.includes("Trap")) return "trap";
+  return "monster";
+}

@@ -1,6 +1,7 @@
 import { useDroppable, useDraggable } from "@dnd-kit/core";
 import type { Card } from "../../../types/card";
 import type { DeckMakerAreaName } from "../deckTypes";
+import { sortDeckCards } from "../../../lib/deck/deckSort";
 
 interface DraggableDeckCardProps {
   card: Card;
@@ -17,7 +18,7 @@ function DraggableDeckCard({
 }: DraggableDeckCardProps) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `deck-${zone}-${card.id}-${index}`,
-    data: { card, fromZone: zone }, 
+    data: { card, fromZone: zone },
   });
 
   return (
@@ -30,7 +31,7 @@ function DraggableDeckCard({
       title={`${card.name} — right-click or double-click to remove`}
       onDoubleClick={() => onRemove(card, zone)}
       onContextMenu={(e) => {
-        e.preventDefault(); 
+        e.preventDefault();
         onRemove(card, zone);
       }}
       style={{
@@ -60,6 +61,7 @@ export function DeckMakerArea({
     id: `zone-${zone}`,
     data: { zone },
   });
+  const sortedCards = sortDeckCards(cards);
 
   return (
     <div
@@ -82,7 +84,7 @@ export function DeckMakerArea({
           gap: 6,
         }}
       >
-        {cards.map((card, i) => (
+        {sortedCards.map((card, i) => (
           <DraggableDeckCard
             key={`${card.id}-${i}`}
             card={card}

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Card } from "../../../types/card";
 import type { ComboStep } from "../comboTypes";
+import type { ZoneId } from "../fieldTypes";
 
 interface ComboStore {
   steps: ComboStep[];
@@ -20,6 +21,9 @@ interface ComboStore {
   ) => void;
   updateStepNotes: (stepId: string, notes: string) => void;
   clearCombo: () => void;
+  setStepPlacement: (stepId: string, zone: ZoneId, cardId: number) => void;
+  clearStepPlacement: (stepId: string, zone: ZoneId) => void;
+  toggleStepVacate: (stepId: string, zone: ZoneId) => void;
 }
 
 let stepIdCounter = 0;
@@ -96,6 +100,47 @@ export const useComboStore = create<ComboStore>()(
       },
 
       clearCombo: () => set({ steps: [] }),
+      // field editing
+      setStepPlacement: (stepId, zone, cardId) => {
+        set((state) => ({
+          steps: state.steps.map((s) => {
+            if (s.id !== stepId) return s;
+            const existing =
+              s.fieldChanges?.placements?.filter((p) => p.zone !== zone) ?? [];
+            return {
+              ...s,
+              fieldChanges: {
+                ...s.fieldChanges,
+                placements: [...existing, { zone, cardId }],
+              },
+            };
+          }),
+        }));
+      },
+
+      clearStepPlacement: (stepId, zone) => {
+        set((state) => ({
+          steps: state.steps.map((s) => {
+            if (s.id !== stepId) return s;
+            const placements =
+              s.fieldChanges?.placements?.filter((p) => p.zone !== zone) ?? [];
+            return { ...s, fieldChanges: { ...s.fieldChanges, placements } };
+          }),
+        }));
+      },
+
+      toggleStepVacate: (stepId, zone) => {
+        set((state) => ({
+          steps: state.steps.map((s) => {
+            if (s.id !== stepId) return s;
+            const current = s.fieldChanges?.vacates ?? [];
+            const vacates = current.includes(zone)
+              ? current.filter((z) => z !== zone)
+              : [...current, zone];
+            return { ...s, fieldChanges: { ...s.fieldChanges, vacates } };
+          }),
+        }));
+      },
     }),
     { name: "ygo-combo-storage" },
   ),
