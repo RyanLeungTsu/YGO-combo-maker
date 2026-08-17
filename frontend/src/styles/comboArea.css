@@ -1,13 +1,13 @@
 .combo-row {
-  position: relative; 
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  gap: 16px;
-  padding: 16px;
-  min-height: 220px;
-  border: 2px dashed #333;
-  border-radius: 8px;
+  gap: 1.0rem;
+  padding: 1.0rem;
+  min-height: 13.7rem;
+  border: 0.1rem dashed #333;
+  border-radius: 0.5rem;
   background: transparent;
 }
 
@@ -17,45 +17,45 @@
 }
 
 .combo-empty-slot {
-  width: 140px;
-  height: 190px;
-  border: 2px dashed #555;
-  border-radius: 8px;
+  width: 8.7rem;
+  height: 11.8rem;
+  border: 0.1rem dashed #555;
+  border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #555;
-  font-size: 28px;
+  font-size: 1.7rem;
   flex-shrink: 0;
 }
 
 .connector-overlay {
   position: absolute;
   inset: 0;
-  pointer-events: none; 
+  pointer-events: none;
 }
 
 .connector-bar {
   position: absolute;
   transform: translate(-50%, -50%);
-  border: 2px solid #c0392b;
-  border-radius: 4px;
+  border: 0.1rem solid #c0392b;
+  border-radius: 0.2rem;
   background: #1e1e1e;
   color: #eee;
-  font-size: 10px;
-  padding: 2px 4px;
+  font-size: 0.6rem;
+  padding: 0.1rem 0.2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  pointer-events: all; 
+  gap: 0.1rem;
+  pointer-events: all;
   z-index: 2;
 }
 
 .connector-bar select,
 .connector-bar input {
-  font-size: 10px;
-  max-width: 90px;
+  font-size: 0.6rem;
+  max-width: 5.6rem;
   border: none;
   background: transparent;
   color: inherit;
@@ -63,20 +63,137 @@
 
 .connector-leg {
   position: absolute;
-  width: 1px;
+  width: 0.0rem;
   background: #c0392b;
 }
 
 .combo-step-card {
-  --step-card-width: 140px;
+  --step-card-width: 8rem;
   position: relative;
   background: #1e1e1e;
-  border: 1px solid #444;
-  border-radius: 8px;
-  padding: 8px;
-  padding-top: 20px;
+  border: 0.1rem solid #444;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  padding-top: 1.2rem;
   width: var(--step-card-width);
   flex-shrink: 0;
+}
+
+.combo-new-row-btn {
+  align-self: center;
+  height: 40px;
+  padding: 0 10px;
+  font-size: 11px;
+  border: 1px dashed #555;
+  border-radius: 6px;
+  background: transparent;
+  color: #aaa;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.combo-new-row-btn:hover {
+  border-color: #50a0ff;
+  color: #50a0ff;
+}
+
+.combo-break {
+  flex-basis: 100%;
+  height: 0;
+  display: flex;
+}
+
+.combo-break-marker {
+  width: var(--step-card-width, 8rem);
+  height: 11.8rem;
+  border: 0.1rem dashed #555;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
+}
+
+.combo-break-spacer {
+  flex-basis: 100%;
+  height: 0;
+}
+
+/* comboStepCard.tsx */
+.step-card-draggable-zone {
+  position: relative;
+  cursor: grab;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.combo-card-badge {
+  position: absolute;
+  top: -0.7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #5b8def;
+  color: #fff;
+  border-radius: 50%;
+  width: 1.3rem;
+  height: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  z-index: 2;
+}
+
+.combo-card-delete {
+  position: absolute;
+  top: 0.1rem;
+  right: 0.1rem;
+  background: #c0392b;
+  color: #fff;
+  border: none;
+  border-radius: 0.2rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  font-size: 0.6rem;
+  line-height: 1.1rem;
+  padding: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.combo-card-image {
+  width: 100%;
+  border-radius: 0.2rem;
+  cursor: pointer;
+}
+
+.combo-card-name {
+  font-size: 0.6rem;
+  margin: 0.2rem 0;
+  color: #eee;
+}
+
+.combo-card-select {
+  width: 100%;
+  font-size: 0.6rem;
+}
+
+.combo-card-custom-input {
+  width: 100%;
+  font-size: 0.6rem;
+  margin-top: 0.2rem;
+}
+
+.combo-card-field-toggle {
+  width: 100%;
+  font-size: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.combo-card-notes {
+  width: 100%;
+  font-size: 0.6rem;
+  margin-top: 0.3rem;
+  resize: none;
+  font-family: inherit;
 }
 
 /* mobile */

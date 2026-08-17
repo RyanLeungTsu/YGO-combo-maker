@@ -30,17 +30,25 @@ import "./App.css";
 
 function App() {
   const [activeDragCard, setActiveDragCard] = useState<Card | null>(null);
-  const { filters, setFilter, clearFilter, clearAll } = useCardFilters({ name: "darklord" });
+  const { filters, setFilter, clearFilter, clearAll } = useCardFilters({
+    name: "darklord",
+  });
   const { addCard, moveCard, main, extra, side } = useDeckStore();
   const { previewCard, closePreview } = useUiStore();
-  const { addStep, reorderSteps } = useComboStore();
+  const { addStep, swapSteps } = useComboStore();
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
   );
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } =
-    useCardSearch(filters);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+  } = useCardSearch(filters);
 
   const allCards = data?.pages.flatMap((page) => page.cards) ?? [];
   const deck = { main, extra, side };
@@ -54,7 +62,7 @@ function App() {
     setActiveDragCard(null);
     const { active, over } = event;
     if (!over) return;
-  // Case 1: user drops a fresh card from search onto the combo area
+    // Case 1: user drops a fresh card from search onto the combo area
     if (over.id === "combo-canvas") {
       const card = active.data.current?.card as Card | undefined;
       if (card) addStep(card);
@@ -64,12 +72,14 @@ function App() {
     const draggedStepId = active.data.current?.stepId as string | undefined;
     const targetStepId = over.data.current?.stepId as string | undefined;
     if (draggedStepId && targetStepId) {
-      reorderSteps(draggedStepId, targetStepId);
+      swapSteps(draggedStepId, targetStepId);
       return;
     }
     // Case 3: search -> deck zone, or deck -> deck zone move
     const card = active.data.current?.card as Card | undefined;
-    const fromZone = active.data.current?.fromZone as DeckMakerAreaName | undefined;
+    const fromZone = active.data.current?.fromZone as
+      | DeckMakerAreaName
+      | undefined;
     const toZone = over.data.current?.zone as DeckMakerAreaName | undefined;
     if (!card || !toZone) return;
 
@@ -81,12 +91,24 @@ function App() {
   }
 
   return (
-    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
       <div className="app-layout">
         <div className="search-panel">
           <h1>Card Search</h1>
-          <SearchBar value={filters.name ?? ""} onChange={(v) => setFilter("name", v || undefined)} />
-          <FilterUI filters={filters} onSetFilter={setFilter} onClearFilter={clearFilter} onClearAll={clearAll} />
+          <SearchBar
+            value={filters.name ?? ""}
+            onChange={(v) => setFilter("name", v || undefined)}
+          />
+          <FilterUI
+            filters={filters}
+            onSetFilter={setFilter}
+            onClearFilter={clearFilter}
+            onClearAll={clearAll}
+          />
           {isLoading && <p>Loading...</p>}
           {error && <p>Error loading cards.</p>}
           <CardGrid
@@ -112,9 +134,21 @@ function App() {
         {previewCard && (
           <div
             onClick={closePreview}
-            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.8)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 1000,
+            }}
           >
-            <img src={previewCard.card_images[0]?.image_url} alt={previewCard.name} style={{ maxHeight: "80vh" }} />
+            <img
+              src={previewCard.card_images[0]?.image_url}
+              alt={previewCard.name}
+              style={{ maxHeight: "80vh" }}
+            />
           </div>
         )}
       </div>
@@ -124,7 +158,11 @@ function App() {
           <img
             src={activeDragCard.card_images[0]?.image_url_small}
             alt={activeDragCard.name}
-            style={{ width: 80, borderRadius: 6, boxShadow: "0 4px 12px rgba(0,0,0,0.5)" }}
+            style={{
+              width: 80,
+              borderRadius: 6,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+            }}
           />
         )}
       </DragOverlay>

@@ -1,4 +1,5 @@
-import type { ComboStep } from "../../features/combo-maker/comboTypes";
+import type { ComboEntry } from "../../features/combo-maker/comboTypes";
+import { LINE_BREAK } from "../../features/combo-maker/comboTypes";
 import type { ZoneId } from "../../features/combo-maker/fieldTypes";
 import type { Card } from "../../types/card";
 
@@ -7,14 +8,14 @@ export interface FieldViolation {
   zone: ZoneId;
   message: string;
 }
-
 // replays step placements and removals up to "uptoIndex" returning final board state and zone conflicts
-export function computeFieldState(steps: ComboStep[], uptoIndex: number) {
+export function computeFieldState(steps: ComboEntry[], uptoIndex: number) {
   const board = new Map<ZoneId, Card>();
   const violations: FieldViolation[] = [];
 
   for (let i = 0; i <= uptoIndex && i < steps.length; i++) {
     const step = steps[i];
+    if (step === LINE_BREAK) continue;
     const changes = step.fieldChanges;
     if (!changes) continue;
 
@@ -39,13 +40,15 @@ export function computeFieldState(steps: ComboStep[], uptoIndex: number) {
 }
 
 function findCardPlacement(
-  steps: ComboStep[],
+  steps: ComboEntry[],
   stepIndex: number,
   cardId: number,
 ): Card | undefined {
   // the placed card is usually this step's own card, but can reference an earlier step's card (ex. repositioning card already in play)
   for (let i = stepIndex; i >= 0; i--) {
-    if (steps[i].card.id === cardId) return steps[i].card;
+    const s = steps[i];
+    if (s === LINE_BREAK) continue;
+    if (s.card.id === cardId) return s.card;
   }
   return undefined;
 }

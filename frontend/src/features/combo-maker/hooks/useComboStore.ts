@@ -1,39 +1,49 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Card } from "../../../types/card";
-import type { ComboStep } from "../comboTypes";
+import type { ComboEntry, ComboStep } from "../comboTypes";
+import { LINE_BREAK } from "../comboTypes";
 import type { ZoneId } from "../fieldTypes";
 
 interface ComboStore {
-  steps: ComboStep[];
+  steps: ComboEntry[];
   addStep: (card: Card) => void;
+  addBreak: () => void;
   removeStep: (stepId: string) => void;
+  swapSteps: (stepIdA: string, stepIdB: string) => void;
   updateStepAction: (
     stepId: string,
     action: string,
     customText?: string,
   ) => void;
-  reorderSteps: (stepIdA: string, stepIdB: string) => void;
   updateStepInstruction: (
     stepId: string,
     instruction: string,
     customText?: string,
   ) => void;
   updateStepNotes: (stepId: string, notes: string) => void;
-  clearCombo: () => void;
   setStepPlacement: (stepId: string, zone: ZoneId, cardId: number) => void;
   clearStepPlacement: (stepId: string, zone: ZoneId) => void;
   toggleStepVacate: (stepId: string, zone: ZoneId) => void;
+  clearCombo: () => void;
 }
 
 let stepIdCounter = 0;
 
 export const useComboStore = create<ComboStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       steps: [],
 
       addStep: (card) => {
+        const maxExisting = Math.max(
+          0,
+          ...get()
+            .steps.filter((s): s is ComboStep => s !== LINE_BREAK)
+            .map((s) => Number(s.id.replace("step-", "")) || 0),
+        );
+        if (stepIdCounter <= maxExisting) stepIdCounter = maxExisting + 1;
+
         const newStep: ComboStep = {
           id: `step-${stepIdCounter++}`,
           card,
@@ -42,29 +52,29 @@ export const useComboStore = create<ComboStore>()(
         set((state) => ({ steps: [...state.steps, newStep] }));
       },
 
-      removeStep: (stepId) => {
-        set((state) => ({ steps: state.steps.filter((s) => s.id !== stepId) }));
+      addBreak: () => {
+        set((state) => {
+          const last = state.steps[state.steps.length - 1];
+          if (last === LINE_BREAK) return state;
+          return { steps: [...state.steps, LINE_BREAK] };
+        });
       },
 
-      updateStepAction: (stepId, action, customText) => {
+      removeStep: (stepId) => {
         set((state) => ({
-          steps: state.steps.map((s) =>
-            s.id === stepId
-              ? {
-                  ...s,
-                  action: action as ComboStep["action"],
-                  customActionText: customText,
-                }
-              : s,
-          ),
+          steps: state.steps.filter((s) => s === LINE_BREAK || s.id !== stepId),
         }));
       },
 
-      reorderSteps: (stepIdA, stepIdB) => {
+      swapSteps: (stepIdA, stepIdB) => {
         set((state) => {
           if (stepIdA === stepIdB) return state;
-          const indexA = state.steps.findIndex((s) => s.id === stepIdA);
-          const indexB = state.steps.findIndex((s) => s.id === stepIdB);
+          const indexA = state.steps.findIndex(
+            (s) => s !== LINE_BREAK && s.id === stepIdA,
+          );
+          const indexB = state.steps.findIndex(
+            (s) => s !== LINE_BREAK && s.id === stepIdB,
+          );
           if (indexA === -1 || indexB === -1) return state;
 
           const updated = [...state.steps];
@@ -76,14 +86,31 @@ export const useComboStore = create<ComboStore>()(
         });
       },
 
+      updateStepAction: (stepId, action, customText) => {
+        set((state) => ({
+          steps: state.steps.map((s) =>
+            s !== LINE_BREAK && s.id === stepId
+              ? {
+                  ...s,
+                  action: action as ComboEntry extends infer T
+                    ? T extends { action: infer A }
+                      ? A
+                      : never
+                    : never,
+                  customActionText: customText,
+                }
+              : s,
+          ),
+        }));
+      },
+
       updateStepInstruction: (stepId, instruction, customText) => {
         set((state) => ({
           steps: state.steps.map((s) =>
-            s.id === stepId
+            s !== LINE_BREAK && s.id === stepId
               ? {
                   ...s,
-                  instructionToNext:
-                    instruction as ComboStep["instructionToNext"],
+                  instructionToNext: instruction as never,
                   customInstructionText: customText,
                 }
               : s,
@@ -94,17 +121,15 @@ export const useComboStore = create<ComboStore>()(
       updateStepNotes: (stepId, notes) => {
         set((state) => ({
           steps: state.steps.map((s) =>
-            s.id === stepId ? { ...s, notes } : s,
+            s !== LINE_BREAK && s.id === stepId ? { ...s, notes } : s,
           ),
         }));
       },
 
-      clearCombo: () => set({ steps: [] }),
-      // field editing
       setStepPlacement: (stepId, zone, cardId) => {
         set((state) => ({
           steps: state.steps.map((s) => {
-            if (s.id !== stepId) return s;
+            if (s === LINE_BREAK || s.id !== stepId) return s;
             const existing =
               s.fieldChanges?.placements?.filter((p) => p.zone !== zone) ?? [];
             return {
@@ -121,7 +146,7 @@ export const useComboStore = create<ComboStore>()(
       clearStepPlacement: (stepId, zone) => {
         set((state) => ({
           steps: state.steps.map((s) => {
-            if (s.id !== stepId) return s;
+            if (s === LINE_BREAK || s.id !== stepId) return s;
             const placements =
               s.fieldChanges?.placements?.filter((p) => p.zone !== zone) ?? [];
             return { ...s, fieldChanges: { ...s.fieldChanges, placements } };
@@ -132,7 +157,7 @@ export const useComboStore = create<ComboStore>()(
       toggleStepVacate: (stepId, zone) => {
         set((state) => ({
           steps: state.steps.map((s) => {
-            if (s.id !== stepId) return s;
+            if (s === LINE_BREAK || s.id !== stepId) return s;
             const current = s.fieldChanges?.vacates ?? [];
             const vacates = current.includes(zone)
               ? current.filter((z) => z !== zone)
@@ -141,7 +166,33 @@ export const useComboStore = create<ComboStore>()(
           }),
         }));
       },
+
+      clearCombo: () => set({ steps: [] }),
     }),
-    { name: "ygo-combo-storage" },
+    {
+      name: "ygo-combo-storage",
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        state.steps = cleanupBreaks(state.steps);
+      },
+    },
   ),
 );
+
+function cleanupBreaks(steps: ComboEntry[]): ComboEntry[] {
+  const result: ComboEntry[] = [];
+  for (const entry of steps) {
+    if (entry === LINE_BREAK) {
+      const prev = result[result.length - 1];
+      if (result.length === 0 || prev === LINE_BREAK) continue;
+      result.push(entry);
+    } else {
+      result.push(entry);
+    }
+  }
+  // for trailing breaks
+  if (result[result.length - 1] === LINE_BREAK) {
+    result.pop();
+  }
+  return result;
+}

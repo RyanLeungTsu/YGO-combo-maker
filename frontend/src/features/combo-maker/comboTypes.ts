@@ -40,15 +40,9 @@ export interface ComboStep {
   instructionToNext?: InstructionPreset;
   customInstructionText?: string;
   notes?: string;
-}
-
-export interface ComboStep {
-  id: string;
-  card: Card;
-  action: ActionPreset;
-  customActionText?: string;
-  instructionToNext?: InstructionPreset;
-  customInstructionText?: string;
-  notes?: string;
   fieldChanges?: StepFieldChanges;
 }
+
+// for line break in combo area
+export const LINE_BREAK = "line-break" as const;
+export type ComboEntry = ComboStep | typeof LINE_BREAK;

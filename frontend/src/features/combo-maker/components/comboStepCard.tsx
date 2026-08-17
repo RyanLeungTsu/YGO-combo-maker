@@ -53,76 +53,39 @@ export const ComboStepCard = forwardRef<HTMLDivElement, ComboStepCardProps>(
           ref={setDragRef}
           {...attributes}
           {...listeners}
-          title="Drag to swap with another step"
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 16,
-            cursor: "grab",
-          }}
-        />
-
-        <div
-          style={{
-            position: "absolute",
-            top: -10,
-            left: -10,
-            background: "#5b8def",
-            color: "#fff",
-            borderRadius: "50%",
-            width: 22,
-            height: 22,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 11,
-            fontWeight: 700,
-          }}
+          className="step-card-draggable-zone"
         >
-          {stepNumber}
+          <div className="combo-card-badge">{stepNumber}</div>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              removeStep(step.id);
+            }}
+            title="Delete this step"
+            className="combo-card-delete"
+          >
+            ×
+          </button>
+
+          <img
+            src={step.card.card_images[0]?.image_url_small}
+            alt={step.card.name}
+            onClick={(e) => {
+              e.stopPropagation();
+              openPreview(step.card);
+            }}
+            className="combo-card-image"
+          />
+          <p className="combo-card-name">{step.card.name}</p>
         </div>
-
-        <button
-          onClick={() => removeStep(step.id)}
-          title="Delete this step"
-          style={{
-            position: "absolute",
-            top: 2,
-            right: 2,
-            background: "#c0392b",
-            color: "#fff",
-            border: "none",
-            borderRadius: 4,
-            width: 18,
-            height: 18,
-            fontSize: 11,
-            lineHeight: "18px",
-            padding: 0,
-            cursor: "pointer",
-            zIndex: 1,
-          }}
-        >
-          ×
-        </button>
-
-        <img
-          src={step.card.card_images[0]?.image_url_small}
-          alt={step.card.name}
-          onClick={() => openPreview(step.card)}
-          style={{ width: "100%", borderRadius: 4, cursor: "pointer" }}
-        />
-        <p style={{ fontSize: 11, margin: "4px 0", color: "#eee" }}>
-          {step.card.name}
-        </p>
 
         <select
           value={step.action}
           onChange={(e) =>
             updateStepAction(step.id, e.target.value, customText)
           }
-          style={{ width: "100%", fontSize: 11 }}
+          className="combo-card-select"
         >
           {ACTION_PRESETS.map((a) => (
             <option key={a} value={a}>
@@ -140,13 +103,13 @@ export const ComboStepCard = forwardRef<HTMLDivElement, ComboStepCardProps>(
               setCustomText(e.target.value);
               updateStepAction(step.id, step.action, e.target.value);
             }}
-            style={{ width: "100%", fontSize: 11, marginTop: 4 }}
+            className="combo-card-custom-input"
           />
         )}
 
         <button
           onClick={() => setShowField((v) => !v)}
-          style={{ width: "100%", fontSize: 10, marginTop: 4 }}
+          className="combo-card-field-toggle"
         >
           {showField ? "Hide Field ▾" : "Show Field ▸"}
         </button>
@@ -161,13 +124,7 @@ export const ComboStepCard = forwardRef<HTMLDivElement, ComboStepCardProps>(
             updateStepNotes(step.id, e.target.value);
           }}
           rows={2}
-          style={{
-            width: "100%",
-            fontSize: 11,
-            marginTop: 6,
-            resize: "none",
-            fontFamily: "inherit",
-          }}
+          className="combo-card-notes"
         />
       </div>
     );

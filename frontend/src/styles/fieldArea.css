@@ -14,7 +14,7 @@
 
 .field-area-row--extra {
   justify-content: center;
-  padding-left: 4rem;
+  gap: 10%;
 }
 
 .field-area-row--main {

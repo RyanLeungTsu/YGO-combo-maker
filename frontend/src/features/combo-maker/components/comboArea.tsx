@@ -4,6 +4,7 @@ import { useComboStore } from "../hooks/useComboStore";
 import { ComboStepCard } from "./comboStepCard";
 import { ComboConnector } from "./comboConnector";
 import { EndFieldBoard } from "./endFieldBoard";
+import { LINE_BREAK } from "../comboTypes";
 import "../../../styles/comboArea.css";
 
 // for the connectors in flexbox
@@ -16,7 +17,7 @@ interface ConnectorPosition {
 }
 
 export function ComboArea() {
-  const { steps } = useComboStore();
+  const { steps, addBreak } = useComboStore();
   const { setNodeRef, isOver } = useDroppable({ id: "combo-canvas" });
   // rowRef anchors the overlay's coordinate system, cardRefs tracks rendered card's DOM node to measure position
   const rowRef = useRef<HTMLDivElement>(null);
@@ -35,8 +36,12 @@ export function ComboArea() {
     const next: ConnectorPosition[] = [];
 
     for (let i = 0; i < steps.length - 1; i++) {
-      const a = cardRefs.current.get(steps[i].id);
-      const b = cardRefs.current.get(steps[i + 1].id);
+      const current = steps[i];
+      const nextEntry = steps[i + 1];
+      if (current === LINE_BREAK || nextEntry === LINE_BREAK) continue;
+
+      const a = cardRefs.current.get(current.id);
+      const b = cardRefs.current.get(nextEntry.id);
       if (!a || !b) continue;
 
       const aRect = a.getBoundingClientRect();
@@ -45,7 +50,7 @@ export function ComboArea() {
       if (Math.abs(aRect.top - bRect.top) > 4) continue;
 
       next.push({
-        stepId: steps[i].id,
+        stepId: current.id,
         x: (aRect.right + bRect.left) / 2 - rowRect.left,
         y: aRect.top - rowRect.top,
         leftLegX: aRect.right - rowRect.left,
@@ -67,6 +72,8 @@ export function ComboArea() {
     return () => observer.disconnect();
   }, [steps]);
 
+  let stepCounter = 0;
+
   return (
     <div>
       <div
@@ -80,20 +87,40 @@ export function ComboArea() {
         {steps.length === 0 && <div className="combo-empty-slot">+</div>}
 
         {/* for flex, wrap/size determined by cards */}
-        {steps.map((step, i) => (
-          <ComboStepCard
-            key={step.id}
-            ref={setCardRef(step.id)}
-            step={step}
-            stepNumber={i + 1}
-            stepIndex={i}
-          />
-        ))}
+        {steps.map((entry, i) => {
+          if (entry === LINE_BREAK) {
+            return (
+              <div key={`break-${i}`} style={{ display: "contents" }}>
+                <div
+                  className="combo-break-marker"
+                  title="New row starts here"
+                />
+                <div className="combo-break-spacer" />
+              </div>
+            );
+          }
+          stepCounter++;
+          return (
+            <ComboStepCard
+              key={entry.id}
+              ref={setCardRef(entry.id)}
+              step={entry}
+              stepNumber={stepCounter}
+              stepIndex={i}
+            />
+          );
+        })}
+
+        <button onClick={addBreak} className="combo-new-row-btn">
+          + New Row
+        </button>
 
         <div className="connector-overlay">
           {connectors.map((c) => {
-            const step = steps.find((s) => s.id === c.stepId);
-            if (!step) return null;
+            const step = steps.find(
+              (s) => s !== LINE_BREAK && s.id === c.stepId,
+            );
+            if (!step || step === LINE_BREAK) return null;
             return (
               <div key={c.stepId}>
                 <div

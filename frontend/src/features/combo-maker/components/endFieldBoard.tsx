@@ -54,22 +54,22 @@ export function EndFieldBoard() {
       <button onClick={clearAll} style={{ marginBottom: 8 }}>
         Clear Board
       </button>
-      <div className="field-grid">
-        <div className="field-grid-row field-grid-row--extra">
+      <div className="field-area">
+        <div className="field-area-row field-area-row--extra">
           {EXTRA_MONSTER_ZONES.map((z) => (
             <EndFieldSlot key={z} zone={z} />
           ))}
         </div>
-        <div className="field-grid-row field-grid-row--main">
+        <div className="field-area-row field-area-row--main">
           {MAIN_MONSTER_ZONES.map((z) => (
             <EndFieldSlot key={z} zone={z} />
           ))}
         </div>
-        <div className="field-grid-row field-grid-row--backrow">
-          {SPELL_TRAP_ZONES.map((z) => (
+        <div className="field-area-row field-area-row--backrow">
+          {FIELD_ZONE.map((z) => (
             <EndFieldSlot key={z} zone={z} />
           ))}
-          {FIELD_ZONE.map((z) => (
+          {SPELL_TRAP_ZONES.map((z) => (
             <EndFieldSlot key={z} zone={z} />
           ))}
         </div>
