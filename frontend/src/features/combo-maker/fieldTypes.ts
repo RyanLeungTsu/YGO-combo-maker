@@ -36,7 +36,13 @@ export interface StepFieldChanges {
 export const CARD_ORIENTATIONS = ["face-up", "face-down", "face-up-defense", "face-down-defense"] as const;
 export type CardOrientation = (typeof CARD_ORIENTATIONS)[number];
 
+// for GY, Banished, Hand Zones on End Board
+export const EXTRA_BOARD_ZONES = ["gy", "banished", "hand"] as const;
+export type ExtraBoardZone = (typeof EXTRA_BOARD_ZONES)[number];
+
+// for xyz cards
 export interface PlacedCard {
   card: Card;
   orientation: CardOrientation;
+  materials?: Card[];
 }

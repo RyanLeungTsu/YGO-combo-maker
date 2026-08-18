@@ -29,7 +29,7 @@ import { useComboStore } from "./features/combo-maker/hooks/useComboStore";
 import "./App.css";
 // end baord imports
 import { useEndBoardStore } from "./features/combo-maker/hooks/useEndBoardStore";
-import type { ZoneId } from "./features/combo-maker/fieldTypes";
+import type { ZoneId, ExtraBoardZone } from "./features/combo-maker/fieldTypes";
 
 function App() {
   const [activeDragCard, setActiveDragCard] = useState<Card | null>(null);
@@ -64,13 +64,23 @@ function App() {
   function handleDragEnd(event: DragEndEvent) {
     setActiveDragCard(null);
     const { active, over } = event;
+
+    const endBoardSourceZone = active.data.current?.endBoardSourceZone as ZoneId | undefined;
+    // for removing cards in end board
+    if (endBoardSourceZone && !over) {
+      useEndBoardStore.getState().clearZone(endBoardSourceZone);
+      return;
+    }
+
     if (!over) return;
+
     // Case 1: user drops a fresh card from search onto the combo area
     if (over.id === "combo-canvas") {
       const card = active.data.current?.card as Card | undefined;
       if (card) addStep(card);
       return;
     }
+
     // Case 2:user reorders an existing combo step (both active and over are step ids)
     const draggedStepId = active.data.current?.stepId as string | undefined;
     const targetStepId = over.data.current?.stepId as string | undefined;
@@ -79,20 +89,41 @@ function App() {
       return;
     }
 
-     if (targetStepId && !draggedStepId) {
-    const card = active.data.current?.card as Card | undefined;
-    if (card) {
-      insertStep(targetStepId, card);
+    if (targetStepId && !draggedStepId) {
+      const card = active.data.current?.card as Card | undefined;
+      if (card) {
+        insertStep(targetStepId, card);
+        return;
+      }
+    }
+
+    const xyzMaterialZone = over.data.current?.xyzMaterialZone as ZoneId | undefined;
+    if (xyzMaterialZone) {
+      const card = active.data.current?.card as Card | undefined;
+      if (card) useEndBoardStore.getState().addXyzMaterial(xyzMaterialZone, card);
       return;
     }
-  }
-        // end board
+
+    // end board
     const endBoardZone = over.data.current?.endBoardZone as ZoneId | undefined;
     if (endBoardZone) {
-      const card = active.data.current?.card as Card | undefined;
-      if (card) useEndBoardStore.getState().setCard(endBoardZone, card);
+      if (endBoardSourceZone) {
+        // re-position a card already on the field
+        useEndBoardStore.getState().moveCard(endBoardSourceZone, endBoardZone);
+      } else {
+        const card = active.data.current?.card as Card | undefined;
+        if (card) useEndBoardStore.getState().setCard(endBoardZone, card);
+      }
       return;
     }
+
+    const extraBoardZone = over.data.current?.extraBoardZone as ExtraBoardZone | undefined;
+    if (extraBoardZone) {
+      const card = active.data.current?.card as Card | undefined;
+      if (card) useEndBoardStore.getState().addToExtraZone(extraBoardZone, card);
+      return;
+    }
+
     // Case 3: search -> deck zone, or deck -> deck zone move
     const card = active.data.current?.card as Card | undefined;
     const fromZone = active.data.current?.fromZone as
@@ -100,8 +131,6 @@ function App() {
       | undefined;
     const toZone = over.data.current?.zone as DeckMakerAreaName | undefined;
     if (!card || !toZone) return;
-
-
 
     if (fromZone) {
       moveCard(card, fromZone, toZone);
