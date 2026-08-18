@@ -8,12 +8,11 @@ import { ComboFieldStepEditor } from "../components/comboFieldStepEditor";
 
 interface ComboStepCardProps {
   step: ComboStep;
-  stepNumber: number;
   stepIndex: number;
 }
 
 export const ComboStepCard = forwardRef<HTMLDivElement, ComboStepCardProps>(
-  function ComboStepCard({ step, stepNumber, stepIndex }, measureRef) {
+  function ComboStepCard({ step, stepIndex }, measureRef) {
     const updateStepAction = useComboStore((s) => s.updateStepAction);
     const updateStepNotes = useComboStore((s) => s.updateStepNotes);
     const removeStep = useComboStore((s) => s.removeStep);
@@ -55,7 +54,6 @@ export const ComboStepCard = forwardRef<HTMLDivElement, ComboStepCardProps>(
           {...listeners}
           className="step-card-draggable-zone"
         >
-          <div className="combo-card-badge">{stepNumber}</div>
 
           <button
             onClick={(e) => {

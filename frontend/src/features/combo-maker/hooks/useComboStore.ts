@@ -11,6 +11,7 @@ interface ComboStore {
   addBreak: () => void;
   removeStep: (stepId: string) => void;
   swapSteps: (stepIdA: string, stepIdB: string) => void;
+  insertStep: (targetStepId: string, card: Card) => void;
   updateStepAction: (
     stepId: string,
     action: string,
@@ -82,6 +83,23 @@ export const useComboStore = create<ComboStore>()(
             updated[indexB],
             updated[indexA],
           ];
+          return { steps: updated };
+        });
+      },
+
+      insertStep: (targetStepId, card) => {
+        set((state) => {
+          const index = state.steps.findIndex(
+            (s) => s !== LINE_BREAK && s.id === targetStepId,
+          );
+          if (index === -1) return state;
+          const newStep: ComboStep = {
+            id: `step-${stepIdCounter++}`,
+            card,
+            action: "Normal Summon",
+          };
+          const updated = [...state.steps];
+          updated.splice(index, 0, newStep);
           return { steps: updated };
         });
       },

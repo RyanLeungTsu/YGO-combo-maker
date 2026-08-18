@@ -1,3 +1,5 @@
+import type { Card } from "../../types/card";
+
 export const MAIN_MONSTER_ZONES = [
   "Main-1",
   "Main-2",
@@ -28,4 +30,13 @@ export interface StepFieldChanges {
   placements?: { zone: ZoneId; cardId: number }[];
   //   cards cleared in a zone
   vacates?: ZoneId[];
+}
+
+// for end board card placements
+export const CARD_ORIENTATIONS = ["face-up", "face-down", "face-up-defense", "face-down-defense"] as const;
+export type CardOrientation = (typeof CARD_ORIENTATIONS)[number];
+
+export interface PlacedCard {
+  card: Card;
+  orientation: CardOrientation;
 }

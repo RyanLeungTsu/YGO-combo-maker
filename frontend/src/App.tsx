@@ -27,6 +27,9 @@ import { DeckStatsPanel } from "./features/deck-builder/components/deckStatsPane
 import { ComboArea } from "./features/combo-maker/components/comboArea";
 import { useComboStore } from "./features/combo-maker/hooks/useComboStore";
 import "./App.css";
+// end baord imports
+import { useEndBoardStore } from "./features/combo-maker/hooks/useEndBoardStore";
+import type { ZoneId } from "./features/combo-maker/fieldTypes";
 
 function App() {
   const [activeDragCard, setActiveDragCard] = useState<Card | null>(null);
@@ -35,7 +38,7 @@ function App() {
   });
   const { addCard, moveCard, main, extra, side } = useDeckStore();
   const { previewCard, closePreview } = useUiStore();
-  const { addStep, swapSteps } = useComboStore();
+  const { addStep, swapSteps, insertStep } = useComboStore();
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -75,6 +78,21 @@ function App() {
       swapSteps(draggedStepId, targetStepId);
       return;
     }
+
+     if (targetStepId && !draggedStepId) {
+    const card = active.data.current?.card as Card | undefined;
+    if (card) {
+      insertStep(targetStepId, card);
+      return;
+    }
+  }
+        // end board
+    const endBoardZone = over.data.current?.endBoardZone as ZoneId | undefined;
+    if (endBoardZone) {
+      const card = active.data.current?.card as Card | undefined;
+      if (card) useEndBoardStore.getState().setCard(endBoardZone, card);
+      return;
+    }
     // Case 3: search -> deck zone, or deck -> deck zone move
     const card = active.data.current?.card as Card | undefined;
     const fromZone = active.data.current?.fromZone as
@@ -82,6 +100,8 @@ function App() {
       | undefined;
     const toZone = over.data.current?.zone as DeckMakerAreaName | undefined;
     if (!card || !toZone) return;
+
+
 
     if (fromZone) {
       moveCard(card, fromZone, toZone);

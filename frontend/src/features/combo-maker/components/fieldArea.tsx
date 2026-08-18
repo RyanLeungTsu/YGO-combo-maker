@@ -10,27 +10,30 @@ import "../../../styles/fieldArea.css";
 
 interface FieldAreaProps {
   board: Map<ZoneId, Card>;
-  onZoneClick?: (zone: ZoneId) => void;
+  onZoneRightClick?: (zone: ZoneId) => void;
   highlightZones?: Set<ZoneId>;
 }
 
 function ZoneSlot({
   zone,
   board,
-  onZoneClick,
   isViolation,
+  onZoneRightClick,
 }: {
   zone: ZoneId;
   board: Map<ZoneId, Card>;
-  onZoneClick?: (z: ZoneId) => void;
   isViolation?: boolean;
+  onZoneRightClick?: (z: ZoneId) => void;
 }) {
   const card = board.get(zone);
   return (
     <div
       className={`field-zone-slot ${card ? "field-zone-slot--filled" : ""} ${isViolation ? "field-zone-slot--violation" : ""}`}
-      onClick={() => onZoneClick?.(zone)}
-      title={zone}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        if (card) onZoneRightClick?.(zone);
+      }}
+      title={card ? `${zone} — right-click to remove` : zone}
     >
       {card ? (
         <img
@@ -45,7 +48,7 @@ function ZoneSlot({
 
 export function FieldArea({
   board,
-  onZoneClick,
+  onZoneRightClick,
   highlightZones,
 }: FieldAreaProps) {
   const isViolation = (z: ZoneId) => highlightZones?.has(z) ?? false;
@@ -58,7 +61,7 @@ export function FieldArea({
             key={z}
             zone={z}
             board={board}
-            onZoneClick={onZoneClick}
+            onZoneRightClick={onZoneRightClick}
             isViolation={isViolation(z)}
           />
         ))}
@@ -69,7 +72,7 @@ export function FieldArea({
             key={z}
             zone={z}
             board={board}
-            onZoneClick={onZoneClick}
+            onZoneRightClick={onZoneRightClick}
             isViolation={isViolation(z)}
           />
         ))}
@@ -80,7 +83,7 @@ export function FieldArea({
             key={z}
             zone={z}
             board={board}
-            onZoneClick={onZoneClick}
+            onZoneRightClick={onZoneRightClick}
             isViolation={isViolation(z)}
           />
         ))}
@@ -89,7 +92,7 @@ export function FieldArea({
             key={z}
             zone={z}
             board={board}
-            onZoneClick={onZoneClick}
+            onZoneRightClick={onZoneRightClick}
             isViolation={isViolation(z)}
           />
         ))}

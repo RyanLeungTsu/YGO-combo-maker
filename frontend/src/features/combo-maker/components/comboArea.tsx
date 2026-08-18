@@ -3,7 +3,7 @@ import { useDroppable } from "@dnd-kit/core";
 import { useComboStore } from "../hooks/useComboStore";
 import { ComboStepCard } from "./comboStepCard";
 import { ComboConnector } from "./comboConnector";
-import { EndFieldBoard } from "./endFieldBoard";
+import { EndBoard } from "./endBoard";
 import { LINE_BREAK } from "../comboTypes";
 import "../../../styles/comboArea.css";
 
@@ -72,8 +72,6 @@ export function ComboArea() {
     return () => observer.disconnect();
   }, [steps]);
 
-  let stepCounter = 0;
-
   return (
     <div>
       <div
@@ -89,27 +87,24 @@ export function ComboArea() {
         {/* for flex, wrap/size determined by cards */}
         {steps.map((entry, i) => {
           if (entry === LINE_BREAK) {
-            return (
-              <div key={`break-${i}`} style={{ display: "contents" }}>
-                <div
-                  className="combo-break-marker"
-                  title="New row starts here"
-                />
-                <div className="combo-break-spacer" />
-              </div>
-            );
+            return <div key={`break-${i}`} className="combo-break-spacer" />;
           }
-          stepCounter++;
           return (
             <ComboStepCard
               key={entry.id}
               ref={setCardRef(entry.id)}
               step={entry}
-              stepNumber={stepCounter}
               stepIndex={i}
             />
           );
         })}
+
+        {steps.length > 0 && steps[steps.length - 1] === LINE_BREAK && (
+          <div
+            className="combo-break-marker"
+            title="Next card will start here"
+          />
+        )}
 
         <button onClick={addBreak} className="combo-new-row-btn">
           + New Row
@@ -140,9 +135,9 @@ export function ComboArea() {
 
       <div style={{ marginTop: 16 }}>
         <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 6 }}>
-          End Field
+          End Board
         </p>
-        <EndFieldBoard />
+        <EndBoard />
       </div>
     </div>
   );

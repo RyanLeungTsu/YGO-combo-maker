@@ -2,7 +2,7 @@
   position: relative;
   display: flex;
   flex-wrap: wrap;
-  align-content: flex-start;
+  align-content: center;
   gap: 1.0rem;
   padding: 1.0rem;
   min-height: 13.7rem;
@@ -105,10 +105,11 @@
 
 .combo-break-marker {
   width: var(--step-card-width, 8rem);
-  height: 11.8rem;
+  height: 12rem;
   border: 0.1rem dashed #555;
   border-radius: 0.5rem;
   flex-shrink: 0;
+  align-self: center;
 }
 
 .combo-break-spacer {

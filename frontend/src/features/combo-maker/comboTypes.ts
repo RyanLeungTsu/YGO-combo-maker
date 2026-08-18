@@ -26,8 +26,9 @@ export const INSTRUCTION_PRESETS = [
   "Send to GY (Cost)",
   "Discard (Cost)",
   "Chain Link",
-  "Search",
+  "Add to Hand",
   "Draw",
+  "Material",
   "Custom",
 ] as const;
 export type InstructionPreset = (typeof INSTRUCTION_PRESETS)[number];
