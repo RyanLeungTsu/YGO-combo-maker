@@ -65,12 +65,10 @@ function EndBoardModal({
           </button>
         </div>
 
-        <div className="end-board-modal-content">
-          {children}
-        </div>
+        <div className="end-board-modal-content">{children}</div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
 
@@ -78,7 +76,7 @@ function EndBoardSlot({ zone }: { zone: ZoneId }) {
   const placed = useEndBoardStore((s) => s.board[zone]);
   // const clearZone = useEndBoardStore((s) => s.clearZone);
   const setOrientation = useEndBoardStore((s) => s.setOrientation);
-  const addMaterial = useEndBoardStore((s) => s.addXyzMaterial);
+  // const addMaterial = useEndBoardStore((s) => s.addXyzMaterial);
   const removeMaterial = useEndBoardStore((s) => s.removeXyzMaterial);
   const openPreview = useUiStore((s) => s.openPreview);
   const [showMaterials, setShowMaterials] = useState(false);
@@ -177,35 +175,8 @@ function EndBoardSlot({ zone }: { zone: ZoneId }) {
             ))}
           </div>
 
-          <XyzMaterialDrop
-            zone={zone}
-            onDrop={(card) => addMaterial(zone, card)}
-          />
         </EndBoardModal>
       )}
-    </div>
-  );
-}
-
-function XyzMaterialDrop({
-  zone,
-}: {
-  zone: ZoneId;
-  onDrop: (card: import("../../../types/card").Card) => void;
-}) {
-  const { setNodeRef, isOver } = useDroppable({
-    id: `xyzmaterial-${zone}`,
-    data: { xyzMaterialZone: zone },
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      className={`xyz-material-dropzone ${
-        isOver ? "xyz-material-dropzone--active" : ""
-      }`}
-    >
-      Drag cards here
     </div>
   );
 }
@@ -224,9 +195,7 @@ function SideZonePopup({
   cards: import("../../../types/card").Card[];
   onClose: () => void;
 }) {
-  const removeFromExtraZone = useEndBoardStore(
-    (s) => s.removeFromExtraZone
-  );
+  const removeFromExtraZone = useEndBoardStore((s) => s.removeFromExtraZone);
   const openPreview = useUiStore((s) => s.openPreview);
 
   const { setNodeRef, isOver } = useDroppable({
@@ -245,9 +214,7 @@ function SideZonePopup({
           isOver ? "end-board-zone-drop-area--active" : ""
         }`}
       >
-        {cards.length === 0 && (
-          <p className="extra-zone-empty">Add Cards</p>
-        )}
+        {cards.length === 0 && <p className="extra-zone-empty">Add Cards</p>}
 
         <div className="extra-zone-grid">
           {cards.map((card, i) => (

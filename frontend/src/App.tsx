@@ -11,7 +11,7 @@ import {
 import type { Card } from "./types/card";
 // UI imports
 import { useUiStore } from "./store/uiStore";
-import { Tab } from "./components/ui/Tab";
+import { TabGroup } from "./components/ui/tabGroup";
 // card search and filtering imports
 import { useCardSearch } from "./features/card-search/hooks/useCardSearch";
 import { useCardFilters } from "./features/card-search/hooks/useCardFilters";
@@ -204,15 +204,22 @@ function App() {
         </div>
 
         <div className="combo-deck-panel">
-          <Tab title="Deck Maker" defaultOpen={false}>
-            <DeckBuilderPanel />
-          </Tab>
-          <Tab title="Combo Maker" defaultOpen={true}>
-            <ComboArea />
-          </Tab>
-          <Tab title="Deck Stats" defaultOpen={false}>
-            <DeckStatsPanel deck={deck} />
-          </Tab>
+          <TabGroup
+            defaultTabId="combo"
+            tabs={[
+              {
+                id: "deck",
+                label: "Deck Maker",
+                content: <DeckBuilderPanel />,
+              },
+              { id: "combo", label: "Combo Maker", content: <ComboArea /> },
+              {
+                id: "stats",
+                label: "Deck Stats",
+                content: <DeckStatsPanel deck={deck} />,
+              },
+            ]}
+          />
         </div>
 
         {previewCard && (
