@@ -1,7 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Card } from "../../../types/card";
-import type { ZoneId, PlacedCard, CardOrientation, ExtraBoardZone } from "../fieldTypes";
+import type {
+  ZoneId,
+  PlacedCard,
+  CardOrientation,
+  ExtraBoardZone,
+} from "../fieldTypes";
 
 interface EndBoardStore {
   board: Record<string, PlacedCard>;
@@ -24,15 +29,28 @@ export const useEndBoardStore = create<EndBoardStore>()(
       extraZones: { gy: [], banished: [], hand: [] },
 
       setCard: (zone, card) =>
-        set((state) => ({ board: { ...state.board, [zone]: { card, orientation: "face-up" } } })),
+        set((state) => ({
+          board: { ...state.board, [zone]: { card, orientation: "face-up" } },
+        })),
 
       moveCard: (fromZone, toZone) =>
         set((state) => {
+          if (fromZone === toZone) return state;
+
           const source = state.board[fromZone];
           if (!source) return state;
+
+          const target = state.board[toZone];
           const board = { ...state.board };
-          delete board[fromZone];
-          board[toZone] = source;
+
+          if (target) {
+            board[fromZone] = target;
+            board[toZone] = source;
+          } else {
+            delete board[fromZone];
+            board[toZone] = source;
+          }
+
           return { board };
         }),
 
@@ -40,7 +58,9 @@ export const useEndBoardStore = create<EndBoardStore>()(
         set((state) => {
           const existing = state.board[zone];
           if (!existing) return state;
-          return { board: { ...state.board, [zone]: { ...existing, orientation } } };
+          return {
+            board: { ...state.board, [zone]: { ...existing, orientation } },
+          };
         }),
 
       clearZone: (zone) =>
@@ -57,7 +77,10 @@ export const useEndBoardStore = create<EndBoardStore>()(
           return {
             board: {
               ...state.board,
-              [zone]: { ...existing, materials: [...(existing.materials ?? []), card] },
+              [zone]: {
+                ...existing,
+                materials: [...(existing.materials ?? []), card],
+              },
             },
           };
         }),
@@ -69,23 +92,35 @@ export const useEndBoardStore = create<EndBoardStore>()(
           return {
             board: {
               ...state.board,
-              [zone]: { ...existing, materials: (existing.materials ?? []).filter((_, i) => i !== index) },
+              [zone]: {
+                ...existing,
+                materials: (existing.materials ?? []).filter(
+                  (_, i) => i !== index,
+                ),
+              },
             },
           };
         }),
 
       addToExtraZone: (zone, card) =>
         set((state) => ({
-          extraZones: { ...state.extraZones, [zone]: [...state.extraZones[zone], card] },
+          extraZones: {
+            ...state.extraZones,
+            [zone]: [...state.extraZones[zone], card],
+          },
         })),
 
       removeFromExtraZone: (zone, index) =>
         set((state) => ({
-          extraZones: { ...state.extraZones, [zone]: state.extraZones[zone].filter((_, i) => i !== index) },
+          extraZones: {
+            ...state.extraZones,
+            [zone]: state.extraZones[zone].filter((_, i) => i !== index),
+          },
         })),
 
-      clearAll: () => set({ board: {}, extraZones: { gy: [], banished: [], hand: [] } }),
+      clearAll: () =>
+        set({ board: {}, extraZones: { gy: [], banished: [], hand: [] } }),
     }),
-    { name: "ygo-endboard-storage" }
-  )
+    { name: "ygo-endboard-storage" },
+  ),
 );

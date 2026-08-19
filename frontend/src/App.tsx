@@ -65,7 +65,9 @@ function App() {
     setActiveDragCard(null);
     const { active, over } = event;
 
-    const endBoardSourceZone = active.data.current?.endBoardSourceZone as ZoneId | undefined;
+    const endBoardSourceZone = active.data.current?.endBoardSourceZone as
+      | ZoneId
+      | undefined;
     // for removing cards in end board
     if (endBoardSourceZone && !over) {
       useEndBoardStore.getState().clearZone(endBoardSourceZone);
@@ -97,30 +99,63 @@ function App() {
       }
     }
 
-    const xyzMaterialZone = over.data.current?.xyzMaterialZone as ZoneId | undefined;
+    const xyzMaterialZone = over.data.current?.xyzMaterialZone as
+      | ZoneId
+      | undefined;
     if (xyzMaterialZone) {
       const card = active.data.current?.card as Card | undefined;
-      if (card) useEndBoardStore.getState().addXyzMaterial(xyzMaterialZone, card);
+
+      if (card) {
+        const endBoardStore = useEndBoardStore.getState();
+
+        endBoardStore.addXyzMaterial(xyzMaterialZone, card);
+
+        if (endBoardSourceZone) {
+          endBoardStore.clearZone(endBoardSourceZone);
+        }
+      }
+
       return;
     }
 
     // end board
     const endBoardZone = over.data.current?.endBoardZone as ZoneId | undefined;
     if (endBoardZone) {
-      if (endBoardSourceZone) {
-        // re-position a card already on the field
-        useEndBoardStore.getState().moveCard(endBoardSourceZone, endBoardZone);
-      } else {
-        const card = active.data.current?.card as Card | undefined;
-        if (card) useEndBoardStore.getState().setCard(endBoardZone, card);
+      const endBoardStore = useEndBoardStore.getState();
+      const target = endBoardStore.board[endBoardZone];
+      const card = active.data.current?.card as Card | undefined;
+
+      if (target?.card.type === "XYZ Monster" && card) {
+        if (endBoardSourceZone && endBoardSourceZone === endBoardZone) {
+          return;
+        }
+
+        endBoardStore.addXyzMaterial(endBoardZone, card);
+
+        if (endBoardSourceZone) {
+          endBoardStore.clearZone(endBoardSourceZone);
+        }
+
+        return;
       }
+
+      if (endBoardSourceZone) {
+        // reposition a card already on the field
+        endBoardStore.moveCard(endBoardSourceZone, endBoardZone);
+      } else if (card) {
+        endBoardStore.setCard(endBoardZone, card);
+      }
+
       return;
     }
 
-    const extraBoardZone = over.data.current?.extraBoardZone as ExtraBoardZone | undefined;
+    const extraBoardZone = over.data.current?.extraBoardZone as
+      | ExtraBoardZone
+      | undefined;
     if (extraBoardZone) {
       const card = active.data.current?.card as Card | undefined;
-      if (card) useEndBoardStore.getState().addToExtraZone(extraBoardZone, card);
+      if (card)
+        useEndBoardStore.getState().addToExtraZone(extraBoardZone, card);
       return;
     }
 

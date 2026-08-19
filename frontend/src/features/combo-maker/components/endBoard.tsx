@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { useEndBoardStore } from "../hooks/useEndBoardStore";
 import { useUiStore } from "../../../store/uiStore";
@@ -23,6 +24,56 @@ function nextOrientation(current: CardOrientation): CardOrientation {
   return ORIENTATION_CYCLE[(idx + 1) % ORIENTATION_CYCLE.length];
 }
 
+function EndBoardModal({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className="end-board-modal"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="end-board-modal-window"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="end-board-modal-header">
+          <h3>{title}</h3>
+
+          <button
+            className="end-board-modal-close"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="end-board-modal-content">
+          {children}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 function EndBoardSlot({ zone }: { zone: ZoneId }) {
   const placed = useEndBoardStore((s) => s.board[zone]);
   // const clearZone = useEndBoardStore((s) => s.clearZone);
@@ -36,6 +87,7 @@ function EndBoardSlot({ zone }: { zone: ZoneId }) {
     id: `endboard-${zone}`,
     data: { endBoardZone: zone },
   });
+
   const {
     attributes,
     listeners,
@@ -96,7 +148,7 @@ function EndBoardSlot({ zone }: { zone: ZoneId }) {
           className="xyz-material-toggle"
           onClick={(e) => {
             e.stopPropagation();
-            setShowMaterials((v) => !v);
+            setShowMaterials(true);
           }}
           title="Xyz Material"
         >
@@ -105,10 +157,10 @@ function EndBoardSlot({ zone }: { zone: ZoneId }) {
       )}
 
       {showMaterials && placed && isXyz && (
-        <div className="xyz-material-panel">
-          <p className="extra-zone-empty" style={{ marginBottom: 4 }}>
-            Attached material:
-          </p>
+        <EndBoardModal
+          title={`Xyz Material (${placed.materials?.length ?? 0})`}
+          onClose={() => setShowMaterials(false)}
+        >
           <div className="extra-zone-grid">
             {(placed.materials ?? []).map((m, i) => (
               <img
@@ -124,11 +176,12 @@ function EndBoardSlot({ zone }: { zone: ZoneId }) {
               />
             ))}
           </div>
+
           <XyzMaterialDrop
             zone={zone}
             onDrop={(card) => addMaterial(zone, card)}
           />
-        </div>
+        </EndBoardModal>
       )}
     </div>
   );
@@ -144,13 +197,15 @@ function XyzMaterialDrop({
     id: `xyzmaterial-${zone}`,
     data: { xyzMaterialZone: zone },
   });
+
   return (
     <div
       ref={setNodeRef}
-      className="xyz-material-dropzone"
-      style={{ borderColor: isOver ? "#50a0ff" : undefined }}
+      className={`xyz-material-dropzone ${
+        isOver ? "xyz-material-dropzone--active" : ""
+      }`}
     >
-      Drag material here
+      Drag cards here
     </div>
   );
 }
@@ -160,21 +215,74 @@ const SIDE_ZONE_LABELS: Record<"gy" | "banished", string> = {
   banished: "Banished",
 };
 
+function SideZonePopup({
+  zone,
+  cards,
+  onClose,
+}: {
+  zone: "gy" | "banished";
+  cards: import("../../../types/card").Card[];
+  onClose: () => void;
+}) {
+  const removeFromExtraZone = useEndBoardStore(
+    (s) => s.removeFromExtraZone
+  );
+  const openPreview = useUiStore((s) => s.openPreview);
+
+  const { setNodeRef, isOver } = useDroppable({
+    id: `extrazone-popup-${zone}`,
+    data: { extraBoardZone: zone },
+  });
+
+  return (
+    <EndBoardModal
+      title={`${SIDE_ZONE_LABELS[zone]} (${cards.length})`}
+      onClose={onClose}
+    >
+      <div
+        ref={setNodeRef}
+        className={`end-board-zone-drop-area ${
+          isOver ? "end-board-zone-drop-area--active" : ""
+        }`}
+      >
+        {cards.length === 0 && (
+          <p className="extra-zone-empty">Add Cards</p>
+        )}
+
+        <div className="extra-zone-grid">
+          {cards.map((card, i) => (
+            <img
+              key={`${card.id}-${i}`}
+              src={card.card_images[0]?.image_url_small}
+              alt={card.name}
+              className="extra-zone-card"
+              onClick={() => openPreview(card)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                removeFromExtraZone(zone, i);
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </EndBoardModal>
+  );
+}
+
 function SideZoneColumn({ zone }: { zone: "gy" | "banished" }) {
   const [expanded, setExpanded] = useState(false);
   const cards = useEndBoardStore((s) => s.extraZones[zone]);
-  const removeFromExtraZone = useEndBoardStore((s) => s.removeFromExtraZone);
-  const openPreview = useUiStore((s) => s.openPreview);
+
   const { setNodeRef, isOver } = useDroppable({
     id: `extrazone-${zone}`,
     data: { extraBoardZone: zone },
   });
 
   return (
-    <div>
+    <>
       <button
         ref={setNodeRef}
-        onClick={() => setExpanded((v) => !v)}
+        onClick={() => setExpanded(true)}
         className="side-zone-icon"
         style={{
           borderColor: isOver ? "#50a0ff" : expanded ? "#5b8def" : undefined,
@@ -184,28 +292,13 @@ function SideZoneColumn({ zone }: { zone: "gy" | "banished" }) {
       </button>
 
       {expanded && (
-        <div className="side-zone-panel">
-          {cards.length === 0 && (
-            <p className="extra-zone-empty">Drag cards here</p>
-          )}
-          <div className="extra-zone-grid">
-            {cards.map((card, i) => (
-              <img
-                key={`${card.id}-${i}`}
-                src={card.card_images[0]?.image_url_small}
-                alt={card.name}
-                className="extra-zone-card"
-                onClick={() => openPreview(card)}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  removeFromExtraZone(zone, i);
-                }}
-              />
-            ))}
-          </div>
-        </div>
+        <SideZonePopup
+          zone={zone}
+          cards={cards}
+          onClose={() => setExpanded(false)}
+        />
       )}
-    </div>
+    </>
   );
 }
 
@@ -213,6 +306,7 @@ function HandZone() {
   const cards = useEndBoardStore((s) => s.extraZones.hand);
   const removeFromExtraZone = useEndBoardStore((s) => s.removeFromExtraZone);
   const openPreview = useUiStore((s) => s.openPreview);
+
   const { setNodeRef, isOver } = useDroppable({
     id: "extrazone-hand",
     data: { extraBoardZone: "hand" },
@@ -221,6 +315,7 @@ function HandZone() {
   return (
     <div>
       <p className="end-board-hand-label">Hand ({cards.length})</p>
+
       <div
         ref={setNodeRef}
         className="end-board-hand-strip"
@@ -229,6 +324,7 @@ function HandZone() {
         {cards.length === 0 && (
           <p className="extra-zone-empty">Drag cards here</p>
         )}
+
         {cards.map((card, i) => (
           <img
             key={`${card.id}-${i}`}
@@ -253,24 +349,26 @@ export function EndBoard() {
   return (
     <div>
       <div className="end-board">
-
         <div className="end-board-layout">
           <div className="end-board-left-column">
-          {FIELD_ZONE.map((z) => (
-            <EndBoardSlot key={z} zone={z} />
-          ))}
-        </div>
+            {FIELD_ZONE.map((z) => (
+              <EndBoardSlot key={z} zone={z} />
+            ))}
+          </div>
+
           <div className="field-area">
             <div className="field-area-row field-area-row--extra">
               {EXTRA_MONSTER_ZONES.map((z) => (
                 <EndBoardSlot key={z} zone={z} />
               ))}
             </div>
+
             <div className="field-area-row field-area-row--main">
               {MAIN_MONSTER_ZONES.map((z) => (
                 <EndBoardSlot key={z} zone={z} />
               ))}
             </div>
+
             <div className="field-area-row field-area-row--backrow">
               {SPELL_TRAP_ZONES.map((z) => (
                 <EndBoardSlot key={z} zone={z} />
@@ -281,9 +379,10 @@ export function EndBoard() {
           <div className="end-board-right-column">
             <SideZoneColumn zone="gy" />
             <SideZoneColumn zone="banished" />
+
             <button onClick={clearAll} style={{ marginBottom: 8 }}>
-        Clear Board
-      </button>
+              Clear Board
+            </button>
           </div>
         </div>
       </div>
