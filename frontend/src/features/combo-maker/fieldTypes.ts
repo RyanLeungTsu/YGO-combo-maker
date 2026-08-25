@@ -46,3 +46,10 @@ export interface PlacedCard {
   orientation: CardOrientation;
   materials?: Card[];
 }
+
+//  for endboard state
+export interface EndBoardState {
+  board: Record<string, PlacedCard>;
+  extraZones: Record<ExtraBoardZone, Card[]>;
+  notes: string;
+}

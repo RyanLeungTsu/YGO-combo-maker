@@ -10,7 +10,7 @@ import {
   FIELD_ZONE,
 } from "../fieldTypes";
 import type { ZoneId, CardOrientation } from "../fieldTypes";
-import "../../../styles/fieldArea.css";
+import "../../../styles/endBoard.css";
 
 const ORIENTATION_CYCLE: CardOrientation[] = [
   "face-up",
@@ -174,7 +174,6 @@ function EndBoardSlot({ zone }: { zone: ZoneId }) {
               />
             ))}
           </div>
-
         </EndBoardModal>
       )}
     </div>
@@ -285,7 +284,7 @@ function HandZone() {
 
       <div
         ref={setNodeRef}
-        className="end-board-hand-strip"
+        className="end-board-hand-zone"
         style={{ borderColor: isOver ? "#50a0ff" : undefined }}
       >
         {cards.length === 0 && (
@@ -312,10 +311,44 @@ function HandZone() {
 
 export function EndBoard() {
   const clearAll = useEndBoardStore((s) => s.clearAll);
+  const notes = useEndBoardStore((s) => s.notes);
+  const setNotes = useEndBoardStore((s) => s.setNotes);
 
   return (
     <div>
       <div className="end-board">
+        <div className="end-board-notes">
+
+        <p
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            margin: "0 0 6px",
+            textAlign: "center",
+          }}
+        >
+          End Board
+        </p>
+
+        <textarea
+          placeholder="Notes..."
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          rows={2}
+          style={{
+            width: "100%",
+            fontSize: 12,
+            marginBottom: 10,
+            padding: 6,
+            resize: "vertical",
+            background: "#1e1e1e",
+            border: "1px solid #444",
+            borderRadius: 4,
+            color: "#eee",
+            fontFamily: "inherit",
+          }}
+          />
+          </div>
         <div className="end-board-layout">
           <div className="end-board-left-column">
             {FIELD_ZONE.map((z) => (
@@ -347,7 +380,11 @@ export function EndBoard() {
             <SideZoneColumn zone="gy" />
             <SideZoneColumn zone="banished" />
 
-            <button onClick={clearAll} style={{ marginBottom: 8 }}>
+            <button
+              className="side-zone-icon clear-btn"
+              onClick={clearAll}
+              style={{ marginBottom: 8 }}
+            >
               Clear Board
             </button>
           </div>

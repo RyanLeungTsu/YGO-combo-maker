@@ -1,5 +1,6 @@
 import type { Card } from "../../../types/card";
 import { CardItem } from "./CardItem";
+import { useInfiniteScrollTrigger } from "../hooks/useInfiniteScroll";
 
 interface CardGridProps {
   cards: Card[];
@@ -14,12 +15,17 @@ export function CardGrid({
   isFetchingNextPage,
   onLoadMore,
 }: CardGridProps) {
+  const sentinelRef = useInfiniteScrollTrigger(
+    onLoadMore,
+    hasNextPage && !isFetchingNextPage,
+  );
+
   return (
     <div>
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
           gap: 8,
         }}
       >
@@ -28,14 +34,18 @@ export function CardGrid({
         ))}
       </div>
 
-      {hasNextPage && (
-        <button
-          onClick={onLoadMore}
-          disabled={isFetchingNextPage}
-          style={{ marginTop: 12, width: "100%" }}
+      {hasNextPage && <div ref={sentinelRef} style={{ height: 1 }} />}
+      {isFetchingNextPage && (
+        <p
+          style={{
+            textAlign: "center",
+            fontSize: 12,
+            opacity: 0.6,
+            marginTop: 8,
+          }}
         >
-          {isFetchingNextPage ? "Loading..." : "Load more"}
-        </button>
+          Loading more...
+        </p>
       )}
     </div>
   );

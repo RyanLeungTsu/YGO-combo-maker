@@ -4,6 +4,9 @@ import { useComboStore } from "../hooks/useComboStore";
 import { ComboStepCard } from "./comboStepCard";
 import { ComboConnector } from "./comboConnector";
 import { EndBoard } from "./endBoard";
+import { useUserComboStore } from "../hooks/useUserComboStore";
+import { useDeckStore } from "../../deck-builder/hooks/useDeckStore";
+import { useEndBoardStore } from "../hooks/useEndBoardStore";
 import { LINE_BREAK } from "../comboTypes";
 import "../../../styles/comboArea.css";
 
@@ -23,6 +26,42 @@ export function ComboArea() {
   const rowRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [connectors, setConnectors] = useState<ConnectorPosition[]>([]);
+
+  const userCombos = useUserComboStore((s) => s.userCombos);
+  const addUserCombo = useUserComboStore((s) => s.addUserCombo);
+  const { main, extra, side } = useDeckStore();
+  const board = useEndBoardStore((s) => s.board);
+  const extraZones = useEndBoardStore((s) => s.extraZones);
+  const endBoardNotes = useEndBoardStore((s) => s.notes);
+  const [nameInput, setNameInput] = useState("");
+  const [includeDeck, setIncludeDeck] = useState(true);
+  const [includeEndBoard, setIncludeEndBoard] = useState(true);
+
+  const realStepCount = steps.filter((s) => s !== LINE_BREAK).length;
+
+  // for generating a combo name (defaultly)
+  function getNextDefaultName() {
+    let n = 1;
+    while (userCombos.some((c) => c.name === `Combo ${n}`)) n++;
+    return `Combo ${n}`;
+  }
+
+  function handleSave() {
+    if (realStepCount === 0) return;
+    const name = nameInput.trim() || getNextDefaultName();
+    if (userCombos.some((c) => c.name === name)) {
+      alert(`A combo named "${name}" already exists. Choose a different name.`);
+      return;
+    }
+    addUserCombo(
+      name,
+      steps,
+      includeDeck ? { main, extra, side } : undefined,
+      includeEndBoard ? { board, extraZones, notes: endBoardNotes } : undefined,
+    );
+    setNameInput("");
+  }
+
   // registers and unregisters card nodes as they mount and unmount
   const setCardRef = (stepId: string) => (el: HTMLDivElement | null) => {
     if (el) cardRefs.current.set(stepId, el);
@@ -74,6 +113,58 @@ export function ComboArea() {
 
   return (
     <div>
+      <div
+        style={{
+          display: "flex",
+          gap: 6,
+          marginBottom: 8,
+          alignItems: "center",
+        }}
+      >
+        <input
+          type="text"
+          placeholder="Combo name..."
+          value={nameInput}
+          onChange={(e) => setNameInput(e.target.value)}
+          style={{ flex: 1, fontSize: 12 }}
+        />
+        <label
+          style={{
+            fontSize: 11,
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            whiteSpace: "nowrap",
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={includeDeck}
+            onChange={(e) => setIncludeDeck(e.target.checked)}
+          />
+          Link deck
+        </label>
+        <label
+          style={{
+            fontSize: 11,
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            whiteSpace: "nowrap",
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={includeEndBoard}
+            onChange={(e) => setIncludeEndBoard(e.target.checked)}
+          />
+          Include End Board
+        </label>
+        <button onClick={handleSave} disabled={realStepCount === 0}>
+          Save Combo
+        </button>
+      </div>
+
       <div
         ref={(el) => {
           rowRef.current = el;

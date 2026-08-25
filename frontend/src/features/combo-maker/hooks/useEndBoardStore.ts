@@ -6,11 +6,14 @@ import type {
   PlacedCard,
   CardOrientation,
   ExtraBoardZone,
+  EndBoardState,
 } from "../fieldTypes";
 
 interface EndBoardStore {
   board: Record<string, PlacedCard>;
   extraZones: Record<ExtraBoardZone, Card[]>;
+  notes: string;
+  setNotes: (notes: string) => void;
   setCard: (zone: ZoneId, card: Card) => void;
   moveCard: (fromZone: ZoneId, toZone: ZoneId) => void;
   setOrientation: (zone: ZoneId, orientation: CardOrientation) => void;
@@ -20,6 +23,7 @@ interface EndBoardStore {
   addToExtraZone: (zone: ExtraBoardZone, card: Card) => void;
   removeFromExtraZone: (zone: ExtraBoardZone, index: number) => void;
   clearAll: () => void;
+  loadState: (state: EndBoardState) => void;
 }
 
 export const useEndBoardStore = create<EndBoardStore>()(
@@ -27,6 +31,9 @@ export const useEndBoardStore = create<EndBoardStore>()(
     (set) => ({
       board: {},
       extraZones: { gy: [], banished: [], hand: [] },
+      notes: "",
+
+      setNotes: (notes) => set({ notes }),
 
       setCard: (zone, card) =>
         set((state) => ({
@@ -119,8 +126,20 @@ export const useEndBoardStore = create<EndBoardStore>()(
         })),
 
       clearAll: () =>
-        set({ board: {}, extraZones: { gy: [], banished: [], hand: [] } }),
+        set({
+          board: {},
+          extraZones: { gy: [], banished: [], hand: [] },
+          notes: "",
+        }),
+
+      loadState: (state) =>
+        set({
+          board: state.board,
+          extraZones: state.extraZones,
+          notes: state.notes ?? "",
+        }),
     }),
+
     { name: "ygo-endboard-storage" },
   ),
 );

@@ -1,12 +1,15 @@
 import type { Card } from "../../types/card";
-import type { StepFieldChanges } from "./fieldTypes";
+import type { StepFieldChanges, EndBoardState } from "./fieldTypes";
+import type { DeckState } from "../deck-builder/deckTypes";
 
 export const ACTION_PRESETS = [
   "Normal Summon",
   "Special Summon",
   "Set",
   "Activate Effect",
-  "Activate from Hand",
+  "Activate Effect from Hand",
+  "Activate Effect from GY",
+  "Activate Effect from Banished",
   "Flip Summon",
   "Tribute",
   "Sent to GY",
@@ -29,6 +32,8 @@ export const INSTRUCTION_PRESETS = [
   "Add to Hand",
   "Draw",
   "Material",
+  "Summon Using",
+  "And",
   "Custom",
 ] as const;
 export type InstructionPreset = (typeof INSTRUCTION_PRESETS)[number];
@@ -47,3 +52,13 @@ export interface ComboStep {
 // for line break in combo area
 export const LINE_BREAK = "line-break" as const;
 export type ComboEntry = ComboStep | typeof LINE_BREAK;
+
+// for saving combos/decks
+export interface UserCombo {
+  id: string;
+  name: string;
+  steps: ComboEntry[];
+  linkedDeck?: DeckState;
+  linkedEndBoard?: EndBoardState;
+  savedAt: number;
+}

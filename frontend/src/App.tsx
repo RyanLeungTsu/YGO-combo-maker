@@ -18,6 +18,7 @@ import { useCardFilters } from "./features/card-search/hooks/useCardFilters";
 import { SearchBar } from "./features/card-search/components/Searchbar";
 import { FilterUI } from "./features/card-search/components/FilterUI";
 import { CardGrid } from "./features/card-search/components/CardGrid";
+import { useDebouncedValue } from "./features/card-search/hooks/useDebouncedValue";
 // deck builder imports
 import { DeckBuilderPanel } from "./features/deck-builder/components/deckBuilderPanel";
 import { useDeckStore } from "./features/deck-builder/hooks/useDeckStore";
@@ -26,6 +27,7 @@ import { DeckStatsPanel } from "./features/deck-builder/components/deckStatsPane
 // combo imports
 import { ComboArea } from "./features/combo-maker/components/comboArea";
 import { useComboStore } from "./features/combo-maker/hooks/useComboStore";
+import { SavedComboPanel } from "./features/combo-maker/components/savedComboPanel";
 import "./App.css";
 // end baord imports
 import { useEndBoardStore } from "./features/combo-maker/hooks/useEndBoardStore";
@@ -44,6 +46,7 @@ function App() {
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
   );
 
+  const debouncedFilters = useDebouncedValue(filters, 400);
   const {
     data,
     fetchNextPage,
@@ -51,7 +54,7 @@ function App() {
     isFetchingNextPage,
     isLoading,
     error,
-  } = useCardSearch(filters);
+  } = useCardSearch(debouncedFilters);
 
   const allCards = data?.pages.flatMap((page) => page.cards) ?? [];
   const deck = { main, extra, side };
@@ -218,6 +221,7 @@ function App() {
                 label: "Deck Stats",
                 content: <DeckStatsPanel deck={deck} />,
               },
+              { id: "saved", label: "My Combos", content: <SavedComboPanel /> },
             ]}
           />
         </div>

@@ -3,6 +3,7 @@
   display: flex;
   flex-wrap: wrap;
   align-content: center;
+  justify-content: center;
   gap: 1.0rem;
   padding: 1.0rem;
   min-height: 13.7rem;

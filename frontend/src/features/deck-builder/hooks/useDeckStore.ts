@@ -15,6 +15,7 @@ interface DeckStore extends DeckState {
   clearDeck: () => void;
   getZoneForCard: (card: Card) => DeckMakerAreaName;
   isValidZoneForCard: (card: Card, zone: DeckMakerAreaName) => boolean;
+  loadDeck: (deck: DeckState) => void;
 }
 
 export const useDeckStore = create<DeckStore>()(
@@ -73,10 +74,14 @@ export const useDeckStore = create<DeckStore>()(
 
           return { [fromZone]: source, [toZone]: target };
         });
-      }, 
+      },
 
       clearDeck: () => set({ main: [], extra: [], side: [] }),
+      
+      loadDeck: (deck) =>
+        set({ main: deck.main, extra: deck.extra, side: deck.side }),
     }),
+
     {
       // localStorage key
       name: "ygo-deck-storage",

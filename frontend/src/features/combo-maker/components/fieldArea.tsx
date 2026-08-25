@@ -6,7 +6,7 @@ import {
   SPELL_TRAP_ZONES,
   FIELD_ZONE,
 } from "../fieldTypes";
-import "../../../styles/fieldArea.css";
+import "../../../styles/endBoard.css";
 
 interface FieldAreaProps {
   board: Map<ZoneId, Card>;

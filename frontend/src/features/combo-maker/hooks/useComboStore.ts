@@ -4,6 +4,7 @@ import type { Card } from "../../../types/card";
 import type { ComboEntry, ComboStep } from "../comboTypes";
 import { LINE_BREAK } from "../comboTypes";
 import type { ZoneId } from "../fieldTypes";
+// import type { DeckState } from "../deck-builder/deckTypes";
 
 interface ComboStore {
   steps: ComboEntry[];
@@ -27,6 +28,7 @@ interface ComboStore {
   clearStepPlacement: (stepId: string, zone: ZoneId) => void;
   toggleStepVacate: (stepId: string, zone: ZoneId) => void;
   clearCombo: () => void;
+  loadSteps: (steps: ComboEntry[]) => void;
 }
 
 let stepIdCounter = 0;
@@ -186,6 +188,8 @@ export const useComboStore = create<ComboStore>()(
       },
 
       clearCombo: () => set({ steps: [] }),
+
+      loadSteps: (steps) => set({ steps }),
     }),
     {
       name: "ygo-combo-storage",
@@ -194,7 +198,9 @@ export const useComboStore = create<ComboStore>()(
         state.steps = cleanupBreaks(state.steps);
       },
     },
+
   ),
+  
 );
 
 function cleanupBreaks(steps: ComboEntry[]): ComboEntry[] {
