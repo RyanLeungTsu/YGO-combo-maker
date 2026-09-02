@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db.session import Base, engine
 from app.routers import cards
 
-Base.metadata.create_all(bind=engine)  
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Yu-Gi-Oh Deck & Combo Maker API")
 
@@ -15,6 +15,7 @@ app.add_middleware(
 )
 
 app.include_router(cards.router)
+
 
 @app.get("/api/health")
 def health():
