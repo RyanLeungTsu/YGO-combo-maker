@@ -5,6 +5,7 @@ import { ACTION_PRESETS } from "../comboTypes";
 import { useComboStore } from "../hooks/useComboStore";
 import { useUiStore } from "../../../store/uiStore";
 import { ComboFieldStepEditor } from "../components/comboFieldStepEditor";
+import { getCardImageUrl } from "../../../lib/cardImg";
 
 interface ComboStepCardProps {
   step: ComboStep;
@@ -54,7 +55,6 @@ export const ComboStepCard = forwardRef<HTMLDivElement, ComboStepCardProps>(
           {...listeners}
           className="step-card-draggable-zone"
         >
-
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -67,7 +67,7 @@ export const ComboStepCard = forwardRef<HTMLDivElement, ComboStepCardProps>(
           </button>
 
           <img
-            src={step.card.card_images[0]?.image_url_small}
+            src={getCardImageUrl(step.card)}
             alt={step.card.name}
             onClick={(e) => {
               e.stopPropagation();

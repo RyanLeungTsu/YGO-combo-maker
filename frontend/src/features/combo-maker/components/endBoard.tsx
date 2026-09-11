@@ -11,6 +11,7 @@ import {
 } from "../fieldTypes";
 import type { ZoneId, CardOrientation } from "../fieldTypes";
 import "../../../styles/endBoard.css";
+import { getCardImageUrl } from "../../../lib/cardImg";
 
 const ORIENTATION_CYCLE: CardOrientation[] = [
   "face-up",
@@ -130,7 +131,7 @@ function EndBoardSlot({ zone }: { zone: ZoneId }) {
       >
         {placed && (
           <img
-            src={placed.card.card_images[0]?.image_url_small}
+            src={getCardImageUrl(placed.card)}
             alt={placed.card.name}
             className="field-zone-image"
             style={{
@@ -163,7 +164,7 @@ function EndBoardSlot({ zone }: { zone: ZoneId }) {
             {(placed.materials ?? []).map((m, i) => (
               <img
                 key={`${m.id}-${i}`}
-                src={m.card_images[0]?.image_url_small}
+                src={getCardImageUrl(m)}
                 alt={m.name}
                 className="extra-zone-card"
                 onClick={() => openPreview(m)}
@@ -219,7 +220,7 @@ function SideZonePopup({
           {cards.map((card, i) => (
             <img
               key={`${card.id}-${i}`}
-              src={card.card_images[0]?.image_url_small}
+              src={getCardImageUrl(card)}
               alt={card.name}
               className="extra-zone-card"
               onClick={() => openPreview(card)}
@@ -294,7 +295,7 @@ function HandZone() {
         {cards.map((card, i) => (
           <img
             key={`${card.id}-${i}`}
-            src={card.card_images[0]?.image_url_small}
+            src={getCardImageUrl(card)}
             alt={card.name}
             className="extra-zone-card"
             onClick={() => openPreview(card)}
@@ -318,37 +319,36 @@ export function EndBoard() {
     <div>
       <div className="end-board">
         <div className="end-board-notes">
+          <p
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              margin: "0 0 6px",
+              textAlign: "center",
+            }}
+          >
+            End Board
+          </p>
 
-        <p
-          style={{
-            fontSize: 12,
-            fontWeight: 600,
-            margin: "0 0 6px",
-            textAlign: "center",
-          }}
-        >
-          End Board
-        </p>
-
-        <textarea
-          placeholder="Notes..."
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          rows={2}
-          style={{
-            width: "100%",
-            fontSize: 12,
-            marginBottom: 10,
-            padding: 6,
-            resize: "vertical",
-            background: "#1e1e1e",
-            border: "1px solid #444",
-            borderRadius: 4,
-            color: "#eee",
-            fontFamily: "inherit",
-          }}
+          <textarea
+            placeholder="Notes..."
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={2}
+            style={{
+              width: "100%",
+              fontSize: 12,
+              marginBottom: 10,
+              padding: 6,
+              resize: "vertical",
+              background: "#1e1e1e",
+              border: "1px solid #444",
+              borderRadius: 4,
+              color: "#eee",
+              fontFamily: "inherit",
+            }}
           />
-          </div>
+        </div>
         <div className="end-board-layout">
           <div className="end-board-left-column">
             {FIELD_ZONE.map((z) => (

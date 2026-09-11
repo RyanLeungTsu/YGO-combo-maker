@@ -2,6 +2,7 @@ import { useDraggable } from "@dnd-kit/core";
 import type { Card } from "../../../types/card";
 import { useDeckStore } from "../../deck-builder/hooks/useDeckStore";
 import { useUiStore } from "../../../store/uiStore";
+import { getCardImageUrl } from "../../../lib/cardImg";
 
 export function CardItem({ card }: { card: Card }) {
   const addCard = useDeckStore((state) => state.addCard);
@@ -23,7 +24,7 @@ export function CardItem({ card }: { card: Card }) {
       }}
     >
       <img
-        src={card.card_images[0]?.image_url_small}
+        src={getCardImageUrl(card)}
         alt={card.name}
         loading="lazy"
         title={`${card.name} — click to preview, double-click or right-click to add to deck`}

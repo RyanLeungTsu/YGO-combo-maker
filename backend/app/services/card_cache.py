@@ -66,6 +66,7 @@ def cache_row_to_dict(row: CardCache) -> dict:
         "level": row.level,
         "attribute": row.attribute,
         "card_images": row.card_images,
+        "local_image_url": row.local_image_path,
     }
 
 

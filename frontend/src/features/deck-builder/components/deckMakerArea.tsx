@@ -2,6 +2,7 @@ import { useDroppable, useDraggable } from "@dnd-kit/core";
 import type { Card } from "../../../types/card";
 import type { DeckMakerAreaName } from "../deckTypes";
 import { sortDeckCards } from "../../../lib/deck/deckSort";
+import { getCardImageUrl } from "../../../lib/cardImg";
 
 interface DraggableDeckCardProps {
   card: Card;
@@ -26,7 +27,7 @@ function DraggableDeckCard({
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      src={card.card_images[0]?.image_url_small}
+      src={getCardImageUrl(card)}
       alt={card.name}
       title={`${card.name} — right-click or double-click to remove`}
       onDoubleClick={() => onRemove(card, zone)}

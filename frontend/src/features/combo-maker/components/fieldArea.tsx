@@ -7,6 +7,7 @@ import {
   FIELD_ZONE,
 } from "../fieldTypes";
 import "../../../styles/endBoard.css";
+import { getCardImageUrl } from "../../../lib/cardImg";
 
 interface FieldAreaProps {
   board: Map<ZoneId, Card>;
@@ -37,7 +38,7 @@ function ZoneSlot({
     >
       {card ? (
         <img
-          src={card.card_images[0]?.image_url_small}
+          src={getCardImageUrl(card)}
           alt={card.name}
           className="field-zone-image"
         />

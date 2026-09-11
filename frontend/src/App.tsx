@@ -9,6 +9,7 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import type { Card } from "./types/card";
+import { getCardImageUrl } from "./lib/cardImg";
 // UI imports
 import { useUiStore } from "./store/uiStore";
 import { TabGroup } from "./components/ui/tabGroup";
@@ -251,7 +252,7 @@ function App() {
       <DragOverlay>
         {activeDragCard && (
           <img
-            src={activeDragCard.card_images[0]?.image_url_small}
+            src={getCardImageUrl(activeDragCard)}
             alt={activeDragCard.name}
             style={{
               width: 80,

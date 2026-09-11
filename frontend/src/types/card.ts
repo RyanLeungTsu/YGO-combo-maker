@@ -19,6 +19,7 @@ export interface Card {
   level?: number;
   attribute?: string;
   card_images: CardImage[];
+  local_image_url?: string;
 }
 
 export interface CardSearchFilters {
