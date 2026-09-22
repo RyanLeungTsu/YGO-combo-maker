@@ -11,6 +11,7 @@ import {
 import type { Card } from "./types/card";
 import { getCardImageUrl } from "./lib/cardImg";
 // UI imports
+import { Header } from "./components/ui/Header";
 import { useUiStore } from "./store/uiStore";
 import { TabGroup } from "./components/ui/tabGroup";
 // card search and filtering imports
@@ -184,6 +185,7 @@ function App() {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
+      <Header />
       <div className="app-layout">
         <div className="search-panel">
           <h1>Card Search</h1>

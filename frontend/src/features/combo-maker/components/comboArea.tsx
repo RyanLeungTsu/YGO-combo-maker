@@ -60,6 +60,11 @@ export function ComboArea() {
       includeEndBoard ? { board, extraZones, notes: endBoardNotes } : undefined,
     );
     setNameInput("");
+
+    const newest = useUserComboStore.getState().userCombos.at(-1);
+    if (newest) {
+      useUserComboStore.getState().syncComboToBackend(newest.id);
+    }
   }
 
   // registers and unregisters card nodes as they mount and unmount

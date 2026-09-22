@@ -2,7 +2,7 @@ import type { DeckState, Violation } from "../../deck-builder/deckTypes";
 import type { BanlistEntry } from "../../../api/banlistApi";
 
 const STATUS_LIMITS: Record<string, number> = {
-  Banned: 0,
+  Forbidden: 0,
   Limited: 1,
   "Semi-Limited": 2,
 };
