@@ -1,4 +1,5 @@
 import { useUiStore } from "../../store/uiStore";
+import { AuthPanel } from "../ui/AuthPanel";
 
 const BANLIST_FORMATS = [
   { value: "tcg", label: "TCG" },
@@ -24,6 +25,7 @@ export function Header() {
       <div style={{ width: 140 }} /> 
 
       <h1 style={{ margin: 0, fontSize: 18, textAlign: "center" }}>Combo Maker</h1>
+      
 
       <select
         value={banlistFormat}
@@ -35,6 +37,7 @@ export function Header() {
           <option key={f.value} value={f.value}>{f.label} Banlist</option>
         ))}
       </select>
+      <AuthPanel />
     </header>
   );
 }

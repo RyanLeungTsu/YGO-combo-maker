@@ -3,25 +3,27 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models.deck import Deck
 from app.schemas.deck import DeckCreate, DeckResponse
+from app.core.deps import get_current_user
+from app.models.user import User
 
 router = APIRouter(prefix="/api/decks", tags=["decks"])
 
 @router.get("", response_model=list[DeckResponse])
-def list_decks(db: Session = Depends(get_db)):
-    return db.query(Deck).order_by(Deck.updated_at.desc()).all()
+def list_decks(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return db.query(Deck).filter(Deck.owner_id == current_user.id).order_by(Deck.updated_at.desc()).all()
 
 @router.post("", response_model=DeckResponse)
-def create_deck(payload: DeckCreate, db: Session = Depends(get_db)):
-    deck = Deck(name=payload.name, main=payload.main, extra=payload.extra, side=payload.side)
+def create_deck(payload: DeckCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    deck = Deck(name=payload.name, main=payload.main, extra=payload.extra, side=payload.side, owner_id=current_user.id)
     db.add(deck)
     db.commit()
     db.refresh(deck)
     return deck
 
 @router.put("/{deck_id}", response_model=DeckResponse)
-def update_deck(deck_id: int, payload: DeckCreate, db: Session = Depends(get_db)):
+def update_deck(deck_id: int, payload: DeckCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     deck = db.get(Deck, deck_id)
-    if not deck:
+    if not deck or deck.owner_id != current_user.id:
         raise HTTPException(status_code=404, detail="Deck not found")
     deck.name = payload.name
     deck.main = payload.main
@@ -32,9 +34,9 @@ def update_deck(deck_id: int, payload: DeckCreate, db: Session = Depends(get_db)
     return deck
 
 @router.delete("/{deck_id}")
-def delete_deck(deck_id: int, db: Session = Depends(get_db)):
+def delete_deck(deck_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     deck = db.get(Deck, deck_id)
-    if not deck:
+    if not deck or deck.owner_id != current_user.id:
         raise HTTPException(status_code=404, detail="Deck not found")
     db.delete(deck)
     db.commit()

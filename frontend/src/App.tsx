@@ -30,6 +30,7 @@ import { DeckStatsPanel } from "./features/deck-builder/components/deckStatsPane
 import { ComboArea } from "./features/combo-maker/components/comboArea";
 import { useComboStore } from "./features/combo-maker/hooks/useComboStore";
 import { SavedComboPanel } from "./features/combo-maker/components/savedComboPanel";
+import { FeaturedComboPanel } from "./features/combo-maker/components/featuredComboPanel";
 import "./App.css";
 // end baord imports
 import { useEndBoardStore } from "./features/combo-maker/hooks/useEndBoardStore";
@@ -213,6 +214,11 @@ function App() {
           <TabGroup
             defaultTabId="combo"
             tabs={[
+              {
+                id: "featured",
+                label: "Featured",
+                content: <FeaturedComboPanel />,
+              },
               {
                 id: "deck",
                 label: "Deck Maker",

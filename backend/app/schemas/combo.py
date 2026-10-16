@@ -16,3 +16,6 @@ class ComboResponse(ComboCreate):
 
     class Config:
         from_attributes = True
+
+class PublishRequest(BaseModel):
+    is_published: bool
