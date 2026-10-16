@@ -7,6 +7,8 @@ interface UiStore {
   closePreview: () => void;
   banlistFormat: string;
   setBanlistFormat: (format: string) => void;
+  activeTabId: string;
+  setActiveTabId: (tabId: string) => void;
 }
 
 export const useUiStore = create<UiStore>((set) => ({
@@ -15,4 +17,6 @@ export const useUiStore = create<UiStore>((set) => ({
   closePreview: () => set({ previewCard: null }),
   banlistFormat: "tcg",
   setBanlistFormat: (format) => set({ banlistFormat: format }),
+  activeTabId: "combo",
+  setActiveTabId: (tabId) => set({ activeTabId: tabId }),
 }));

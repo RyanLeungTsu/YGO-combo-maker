@@ -1,12 +1,13 @@
-import os
 import asyncio
+import os
+
+from app.db.session import Base, SessionLocal, engine
+from app.models import banlist, card, combo, deck, user
+from app.routers import auth, banlist_route, cards, combos, decks
+from app.services.banlist_check import refresh_banlist
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.db.session import Base, engine, SessionLocal
-from app.routers import cards, banlist_route, decks, combos, auth
-from app.services.banlist_check import refresh_banlist
-from app.models import user, deck, combo, card, banlist
 
 os.makedirs("static/card_images", exist_ok=True)
 
@@ -27,6 +28,7 @@ app.include_router(banlist_route.router)
 app.include_router(decks.router)
 app.include_router(combos.router)
 app.include_router(auth.router)
+
 
 async def run_banlist_refresh():
     db = SessionLocal()
