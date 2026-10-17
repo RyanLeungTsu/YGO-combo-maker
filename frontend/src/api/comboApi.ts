@@ -2,8 +2,7 @@ import type { ComboEntry } from "../features/combo-maker/comboTypes";
 import type { DeckState } from "../features/deck-builder/deckTypes";
 import type { EndBoardState } from "../features/combo-maker/fieldTypes";
 import { useAuthStore } from "../store/authStore";
-
-const API_BASE = "http://localhost:8000";
+import { API_BASE } from "../lib/apiConfig";
 
 export interface RemoteCombo {
   id: number;

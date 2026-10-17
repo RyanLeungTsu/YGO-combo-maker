@@ -1,6 +1,8 @@
-from pydantic import BaseModel
-from typing import Any
 from datetime import datetime
+from typing import Any
+
+from pydantic import BaseModel
+
 
 class ComboCreate(BaseModel):
     name: str

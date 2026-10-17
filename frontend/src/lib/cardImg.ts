@@ -1,6 +1,5 @@
 import type { Card } from "../types/card";
-
-const API_BASE = "http://localhost:8000";
+import { API_BASE } from "./apiConfig";
 
 export function getCardImageUrl(
   card: Card,

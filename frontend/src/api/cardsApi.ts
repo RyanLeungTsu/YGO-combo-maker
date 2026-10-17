@@ -3,8 +3,10 @@ import type {
   CardSearchFilters,
   CardSearchResponse,
 } from "../types/card";
+import { API_BASE } from "../lib/apiConfig";
 
-const BASE_URL = "http://localhost:8000/api/cards/search";
+const BASE_URL = `${API_BASE}/api/cards/search`;
+
 
 export async function searchCards(
   filters: CardSearchFilters,
@@ -52,7 +54,7 @@ export async function getArchetypes(): Promise<string[]> {
 export async function getCardsByIds(ids: number[]): Promise<Card[]> {
   if (ids.length === 0) return [];
   const params = new URLSearchParams({ ids: ids.join(",") });
-  const res = await fetch(`http://localhost:8000/api/cards/by-ids?${params.toString()}`);
+  const res = await fetch(`${API_BASE}/api/cards/by-ids?${params.toString()}`);
   if (!res.ok) return [];
   const json: CardSearchResponse = await res.json();
   return json.data;

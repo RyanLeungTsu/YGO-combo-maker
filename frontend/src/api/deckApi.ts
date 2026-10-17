@@ -1,7 +1,6 @@
 import type { DeckState } from "../features/deck-builder/deckTypes";
 import { useAuthStore } from "../store/authStore";
-
-const API_BASE = "http://localhost:8000";
+  import { API_BASE } from "../lib/apiConfig";
 
 export interface RemoteDeck extends DeckState {
   id: number;

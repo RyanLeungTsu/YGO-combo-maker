@@ -32,7 +32,7 @@ import { useComboStore } from "./features/combo-maker/hooks/useComboStore";
 import { SavedComboPanel } from "./features/combo-maker/components/savedComboPanel";
 import { FeaturedComboPanel } from "./features/combo-maker/components/featuredComboPanel";
 import "./App.css";
-// end baord imports
+// end board imports
 import { useEndBoardStore } from "./features/combo-maker/hooks/useEndBoardStore";
 import type { ZoneId, ExtraBoardZone } from "./features/combo-maker/fieldTypes";
 
